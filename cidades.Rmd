@@ -1,0 +1,565 @@
+---
+title: 'Lista avaliativa: R e visualização'
+subtitle: 'Probabilidade e Estatística -- 2022.1'
+author: 'fnaufel'
+email: 'https://fnaufel.github.io/'
+date: '27/04/2022 (v. `r format(Sys.Date(), "%d/%m/%Y")`)'
+lang: 'pt-br'
+
+output: 
+  # To install these output formats, run
+  #   install.packages("devtools")
+  #   devtools::install_github("fnaufel/fnaufelRmd")
+  fnaufelRmd::html_report:
+    css:
+      - default
+      - html_files/webex.css
+    includes:
+      after_body: 
+      - html_files/webex.js
+
+---
+
+```{r setup, include=FALSE}
+# The next command configures MANY things and loads quite a few packages.
+# 
+# If you want to see what's being done, execute 
+# 
+#   cat(
+#     system.file(
+#       "rmarkdown/resources/R/_common_report.R", 
+#       package = "fnaufelRmd"
+#     )
+#   )
+# 
+# to find out the location of the file. Then open the file.
+# 
+# If you want to change the configuration, copy the file, edit it, and
+# source it instead of the package file. 
+# 
+# Or simply write your commands here in this code chunk.
+
+source(
+  system.file(
+    "rmarkdown/resources/R/_common_report.R",
+    package = "fnaufelRmd"
+  )
+)
+
+# Opções para dfSummary
+st_options(
+  dfSummary.graph.col = FALSE,
+)
+
+
+# 3 casas decimais em números no texto
+options(fmdigits = 3)
+
+
+library(exercises)
+exercises::iniciar()
+
+gabarito <- TRUE
+gabarito <- FALSE
+```
+
+
+# Instruções {-}
+
+* Veja na tabela abaixo o número da questão que foi sorteada para você. [Se seu número de matrícula não estiver na tabela, entre em contato comigo pelo Telegram.]{.hl}
+
+    ```{r echo=FALSE}
+    tibble::tribble(
+       ~matricula, ~questao,
+      "119060007",       1L,
+      "119060025",       3L,
+      "119060038",       8L,
+      "119060043",       9L,
+      "120060010",       4L,
+      "120060014",       6L,
+      "120060029",       7L,
+      "120060034",      10L,
+      "216060055",       5L,
+      "219060053",       2L
+      ) %>% 
+      kbl(
+        digits = 9, 
+        align = 'r', 
+        format.args = list(big.mark = '.')
+      ) %>% 
+      kable_paper(
+        c('striped', 'hover'),
+        full_width = FALSE
+      )
+    ```
+
+* [Todos os alunos devem fazer a questão ["Carregar, limpar, e explorar os dados"](#eda)]{.hl}
+
+* Clique o botão `Code`, no início desta página, para baixar o arquivo Rmd deste documento.
+
+* Certifique-se de que o pacote `fnaufelRmd` está instalado. Use os comandos
+
+    ```{r eval=FALSE}
+    install.packages("devtools")
+    devtools::install_github("fnaufel/fnaufelRmd")
+    ```
+  
+* Edite o arquivo Rmd para resolver as suas questões. 
+
+* Escreva o máximo possível sobre o seu raciocínio. Justifique suas respostas.
+
+* Teste suas respostas. Tudo deve estar executando sem erros.
+
+* [Envie no Moodle: ]{.hl}
+
+  1. O arquivo Rmd com as suas resoluções e
+  
+  1. Um vídeo de até $5$ minutos explicando as suas resoluções.
+
+* Bom trabalho.
+
+
+# Carregar e limpar os dados
+
+1. Os nomes das colunas originais estão em inglês. Para ver o [dicionário de dados]{.hl} --- informações sobre cada uma das colunas --- visite https://www.kaggle.com/datasets/crisparada/brazilian-cities?select=Data_Dictionary.csv.
+
+1. Eis uma função para renomear as colunas para português. Ela simplesmente retorna um vetor com os novos nomes, na mesma ordem que as colunas originais.
+
+    ```{r}
+    renomear <- function(x) {
+      
+      c(
+        'cidade',
+        'estado',
+        'capital',
+        'pop_resid',
+        'pop_resid_bras',
+        'pop_resid_estr',
+        'unidades_domest',
+        'unidades_domest_urban',
+        'unidades_domest_rural',
+        'pop_regular',
+        'pop_regular_1',
+        'pop_regular_1_4',
+        'pop_regular_5_9',
+        'pop_regular_10_14',
+        'pop_regular_15_59',
+        'pop_regular_60_mais',
+        'area_cultivada',
+        'producao_rural',
+        'idhm_ranking',
+        'idhm',
+        'idhm_renda',
+        'idhm_longevidade',
+        'idhm_educacao',
+        'longitude',
+        'latitude',
+        'altitude',
+        'tv_assinatura',
+        'telefones_fixos',
+        'area',
+        'regiao_turismo',
+        'categoria_turismo',
+        'pop_estimada',
+        'tipo',
+        'gva_agropec',
+        'gva_industria',
+        'gva_servicos',
+        'gva_publico',
+        'gva_total',
+        'impostos',
+        'pib',
+        'pop_pib',
+        'pib_capita',
+        'atividade_principal',
+        'despesas_municipais',
+        'empresas_tot',
+        'empresas_a',
+        'empresas_b',
+        'empresas_c',
+        'empresas_d',
+        'empresas_e',
+        'empresas_f',
+        'empresas_g',
+        'empresas_h',
+        'empresas_i',
+        'empresas_j',
+        'empresas_k',
+        'empresas_l',
+        'empresas_m',
+        'empresas_n',
+        'empresas_o',
+        'empresas_p',
+        'empresas_q',
+        'empresas_r',
+        'empresas_s',
+        'empresas_t',
+        'empresas_u',
+        'hoteis',
+        'camas',
+        'agencias_priv',
+        'agencias_publ',
+        'bancos_priv',
+        'bancos_publ',
+        'patrimonio_bancos_priv',
+        'patrimonio_bancos_publ',
+        'carros',
+        'motos',
+        'tratores',
+        'uber',
+        'mac',
+        'walmart',
+        'correios'
+      )
+      
+    }
+    ```
+
+1. Ler os dados, renomear as colunas e mudar o tipo de duas delas:
+
+    ```{r}
+    cidades <- read_csv(
+      'dados/BRAZIL_CITIES_REV2022.CSV'
+    ) %>% 
+      rename_with(.fn = renomear) %>% 
+      mutate(
+        capital = as.logical(capital),
+        uber = as.logical(uber)
+      )
+    ```
+
+1. Examinar a *tibble* com `dfSummary`:
+
+    ```{r cache=TRUE}
+    cidades %>% 
+      dfSummary() %>% 
+      print(method = 'render')
+    ```
+
+
+# Análise exploratória {#eda}
+
+1. Pesquise o que é IDHM. Qual o valor máximo possível? Qual o valor máximo na *tibble*?
+  
+1. Compare a quantidade de estados com a quantidade de capitais. O que está errado? Conserte a situação.
+
+   `r inicio_resposta()`
+   
+   Como `capital` é uma coluna booleana, usamos `sum` para obter a quantidade de municípios para os quais `capital` é verdadeiro:
+
+    ```{r}
+    cidades %>% 
+      summarize(
+        estados = n_distinct(estado),
+        capitais = sum(capital)
+      )
+    ```
+    
+   As quantidades são diferentes!
+   
+   Listando as capitais com seus respectivos estados:
+   
+    ```{r}
+    cidades %>% 
+      filter(capital) %>% 
+      select(estado, cidade) %>% 
+      arrange(estado)
+    ```
+
+   Em alguns estados, existem cidades --- não-capitais --- que têm o mesmo nome que capitais de outros estados. Estas cidades estão marcadas como capitais.
+   
+    ```{r}
+    repetidas <- cidades %>% 
+      filter(capital) %>% 
+      select(estado, cidade) %>% 
+      arrange(estado) %>% 
+      add_count(estado) %>% 
+      filter(n > 1)
+    
+    repetidas
+    ```
+
+   Vamos consertar:
+   
+    ```{r}
+    nao_capitais <- repetidas %>% 
+      slice(-c(3, 4, 8, 9))
+    
+    cidades <- cidades %>% 
+      mutate(
+        capital = case_when(
+          !(estado %in% nao_capitais$estado) ~ capital, 
+          !(cidade %in% nao_capitais$cidade) ~ capital, 
+          TRUE ~ FALSE
+        )
+      )
+    ```
+   
+   E conferir:
+
+    ```{r}
+    cidades %>% 
+      filter(capital) %>% 
+      select(estado, cidade) %>% 
+      arrange(estado)
+    ```
+   
+   `r fim_resposta()`
+   
+1. A coluna `pop_resid` (população de residentes) é a soma de `pop_resid_bras` (população de residentes brasileiros) com `pop_resid_estr` (população de residentes estrangeiros)? Use a função `all`.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      summarize(
+        all(pop_resid == pop_resid_bras + pop_resid_estr)
+      )
+    ```
+   
+   Sim.
+   
+   `r fim_resposta()`
+   
+1. A coluna `unidades_domest` (unidades domésticas) é a soma de `unidades_domest_urban` (urbanas) com `unidades_domest_rural` (rurais)? Use a função `all`.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      summarize(
+        all(
+          unidades_domest == unidades_domest_urban + unidades_domest_rural
+        )
+      )
+    ```
+
+   Não.
+   
+    ```{r}
+    dif <- cidades %>% 
+      mutate(
+        diferenca = 
+          unidades_domest - unidades_domest_urban - unidades_domest_rural
+      ) %>% 
+      filter(
+        diferenca != 0
+      ) %>% 
+      select(cidade, diferenca)
+    
+    dif
+    
+    dif %>% 
+      distinct(diferenca)
+    ```
+   
+   A diferença nunca é maior que $1$.
+
+   `r fim_resposta()`
+   
+1. Pesquise o significado de "população regular".
+
+1. Na coluna `regiao_turismo`, substitua os zeros por `NA`.
+
+   `r inicio_resposta()`
+   
+   Quantos zeros são?
+   
+    ```{r}
+    cidades %>% 
+      count(regiao_turismo == '0')
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        regiao_turismo = 
+          if_else(
+            regiao_turismo == '0', NA_character_, regiao_turismo
+          )
+      )
+    ```
+   
+   Vamos conferir:
+   
+    ```{r}
+    cidades %>% 
+      count(regiao_turismo == '0')
+    ```
+
+    ```{r}
+    cidades %>% 
+      count(is.na(regiao_turismo))
+    ```
+   
+   `r fim_resposta()`
+   
+
+1. Na coluna `categoria_turismo`, substitua os zeros por `NA` e converta tudo para um [fator ordenado]{.hl} com níveis $E < D < C < B < A$. Use a função `factor`.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    categoria_fator <- cidades %>% 
+      pull(categoria_turismo) %>% 
+      factor(
+        levels = c('E', 'D', 'C', 'B', 'A'),
+        ordered = TRUE
+      )
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        categoria_turismo = categoria_fator
+      )
+    ```
+   
+    ```{r}
+    cidades %>% 
+      count(categoria_turismo)
+    ```
+   
+   `r fim_resposta()`
+
+1. Na coluna `tipo`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    tipo_fator <- cidades %>% 
+      pull(tipo)
+
+    tipo_fator[tipo_fator == '0'] <- NA
+    
+    tipo_fator <- factor(tipo_fator, ordered = FALSE)
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        tipo = tipo_fator
+      )
+    ```
+   
+    ```{r}
+    cidades %>% 
+      count(tipo)
+    ```
+   
+   `r fim_resposta()`
+
+1. Na coluna `atividade_principal`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    ap_fator <- cidades %>% 
+      pull(atividade_principal)
+
+    ap_fator[ap_fator == '0'] <- NA
+    
+    ap_fator <- factor(ap_fator, ordered = FALSE)
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        atividade_principal = ap_fator
+      )
+    ```
+   
+    ```{r}
+    cidades %>% 
+      count(atividade_principal)
+    ```
+   
+   `r fim_resposta()`
+
+1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    estados <- unique(cidades$estado) %>% sort()
+    
+    regioes <- c(
+      'N', 'NE', 'N', 'N', 'NE', 'NE', 'CO', 'SE', 'CO', 'NE', 
+      'SE', 'CO', 'CO', 'N', 'NE', 'NE', 'NE', 'S', 'SE', 'NE', 
+      'N', 'N', 'S', 'S', 'NE', 'SE', 'N'
+    )
+    
+    names(regioes) <- estados
+    
+    cidades <- cidades %>% 
+      mutate(
+        regiao = factor(regioes[estado])
+      )
+    ```
+    
+    ```{r}
+    cidades %>%
+      distinct(regiao, estado) %>% 
+      arrange(regiao)
+    ```
+    
+   `r fim_resposta()`
+
+
+# Regiões de turismo
+
+1. Quantas são?
+
+1. Qual tem mais municípios?
+
+1. Qual tem menos municípios?
+
+1. Quantos municípios não fazem parte de região de turismo?
+
+1. Existe alguma região de turismo contendo cidades de estados diferentes?
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      filter(!is.na(regiao_turismo)) %>% 
+      group_by(regiao_turismo) %>% 
+      summarise(estados = n_distinct(estado)) %>% 
+      filter(estados > 1)
+    ```
+   
+   `r fim_resposta()`
+
+1. Gere uma *tibble* com todos os valores distintos de `regiao_turismo`, sem repetições. 
+
+1. Quais são as $10$ palavras mais comuns que iniciam os nomes de regiões de turismo? Use a função `word`.
+   
+   `r inicio_resposta()`
+   
+    ```{r}
+    mais_comuns <- cidades %>% 
+      distinct(regiao_turismo) %>% 
+      transmute(primeira = word(regiao_turismo)) %>% 
+      count(primeira, sort = TRUE) %>% 
+      head(10)
+    
+    mais_comuns
+    ```
+   
+   `r fim_resposta()`
+
+1. Liste, em ordem alfabética, os nomes completos das regiões de turismo cujos nomes começam com palavras desta lista. 
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      distinct(regiao_turismo) %>% 
+      filter(
+        word(regiao_turismo) %in% mais_comuns$primeira
+      ) %>% 
+      select(regiao_turismo) %>% 
+      arrange(regiao_turismo)
+    ```
+   
+   `r fim_resposta()`
