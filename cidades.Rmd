@@ -119,7 +119,7 @@ gabarito <- FALSE
 * Bom trabalho.
 
 
-# Carregar e limpar os dados
+# Leitura e limpeza dos dados
 
 1. Os nomes das colunas originais estão em inglês. Para ver o [dicionário de dados]{.hl} --- informações sobre cada uma das colunas --- visite https://www.kaggle.com/datasets/crisparada/brazilian-cities?select=Data_Dictionary.csv.
 
@@ -239,8 +239,15 @@ gabarito <- FALSE
 
 # Análise exploratória {#eda}
 
-1. Pesquise o que é IDHM. Qual o valor máximo possível? Qual o valor máximo na *tibble*?
+## IDHM
+
+1. Pesquise o que é IDHM.
+
+1. Qual o valor máximo possível? Qual o valor máximo na *tibble*?
   
+
+## Estados e capitais
+
 1. Compare a quantidade de estados com a quantidade de capitais. O que está errado? Conserte a situação.
 
    `r inicio_resposta()`
@@ -305,7 +312,10 @@ gabarito <- FALSE
     ```
    
    `r fim_resposta()`
-   
+
+
+## Populações
+
 1. A coluna `pop_resid` (população de residentes) é a soma de `pop_resid_bras` (população de residentes brasileiros) com `pop_resid_estr` (população de residentes estrangeiros)? Use a função `all`.
 
    `r inicio_resposta()`
@@ -320,7 +330,10 @@ gabarito <- FALSE
    Sim.
    
    `r fim_resposta()`
-   
+
+
+## Unidades domésticas
+
 1. A coluna `unidades_domest` (unidades domésticas) é a soma de `unidades_domest_urban` (urbanas) com `unidades_domest_rural` (rurais)? Use a função `all`.
 
    `r inicio_resposta()`
@@ -357,7 +370,130 @@ gabarito <- FALSE
 
    `r fim_resposta()`
    
-1. Pesquise o significado de "população regular".
+
+## Categorias de turismo
+
+1. Na coluna `categoria_turismo`, substitua os zeros por `NA` e converta tudo para um [fator ordenado]{.hl} com níveis $E < D < C < B < A$. Use a função `factor`.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    categoria_fator <- cidades %>% 
+      pull(categoria_turismo) %>% 
+      factor(
+        levels = c('E', 'D', 'C', 'B', 'A'),
+        ordered = TRUE
+      )
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        categoria_turismo = categoria_fator
+      )
+    ```
+   
+    ```{r}
+    cidades %>% 
+      count(categoria_turismo)
+    ```
+   
+   `r fim_resposta()`
+
+
+## Tipos
+
+1. Na coluna `tipo`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    tipo_fator <- cidades %>% 
+      pull(tipo)
+
+    tipo_fator[tipo_fator == '0'] <- NA
+    
+    tipo_fator <- factor(tipo_fator, ordered = FALSE)
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        tipo = tipo_fator
+      )
+    ```
+   
+    ```{r}
+    cidades %>% 
+      count(tipo)
+    ```
+   
+   `r fim_resposta()`
+
+
+## Atividades principais
+
+1. Na coluna `atividade_principal`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    ap_fator <- cidades %>% 
+      pull(atividade_principal)
+
+    ap_fator[ap_fator == '0'] <- NA
+    
+    ap_fator <- factor(ap_fator, ordered = FALSE)
+    ```
+
+    ```{r}
+    cidades <- cidades %>% 
+      mutate(
+        atividade_principal = ap_fator
+      )
+    ```
+   
+    ```{r}
+    cidades %>% 
+      count(atividade_principal)
+    ```
+   
+   `r fim_resposta()`
+
+
+## Regiões geográficas
+
+1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    estados <- unique(cidades$estado) %>% sort()
+    
+    regioes <- c(
+      'N', 'NE', 'N', 'N', 'NE', 'NE', 'CO', 'SE', 'CO', 'NE', 
+      'SE', 'CO', 'CO', 'N', 'NE', 'NE', 'NE', 'S', 'SE', 'NE', 
+      'N', 'N', 'S', 'S', 'NE', 'SE', 'N'
+    )
+    
+    names(regioes) <- estados
+    
+    cidades <- cidades %>% 
+      mutate(
+        regiao = factor(regioes[estado])
+      )
+    ```
+    
+    ```{r}
+    cidades %>%
+      distinct(regiao, estado) %>% 
+      arrange(regiao)
+    ```
+    
+   `r fim_resposta()`
+
+
+## Regiões de turismo
 
 1. Na coluna `regiao_turismo`, substitua os zeros por `NA`.
 
@@ -395,120 +531,7 @@ gabarito <- FALSE
    `r fim_resposta()`
    
 
-1. Na coluna `categoria_turismo`, substitua os zeros por `NA` e converta tudo para um [fator ordenado]{.hl} com níveis $E < D < C < B < A$. Use a função `factor`.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    categoria_fator <- cidades %>% 
-      pull(categoria_turismo) %>% 
-      factor(
-        levels = c('E', 'D', 'C', 'B', 'A'),
-        ordered = TRUE
-      )
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        categoria_turismo = categoria_fator
-      )
-    ```
-   
-    ```{r}
-    cidades %>% 
-      count(categoria_turismo)
-    ```
-   
-   `r fim_resposta()`
-
-1. Na coluna `tipo`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    tipo_fator <- cidades %>% 
-      pull(tipo)
-
-    tipo_fator[tipo_fator == '0'] <- NA
-    
-    tipo_fator <- factor(tipo_fator, ordered = FALSE)
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        tipo = tipo_fator
-      )
-    ```
-   
-    ```{r}
-    cidades %>% 
-      count(tipo)
-    ```
-   
-   `r fim_resposta()`
-
-1. Na coluna `atividade_principal`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    ap_fator <- cidades %>% 
-      pull(atividade_principal)
-
-    ap_fator[ap_fator == '0'] <- NA
-    
-    ap_fator <- factor(ap_fator, ordered = FALSE)
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        atividade_principal = ap_fator
-      )
-    ```
-   
-    ```{r}
-    cidades %>% 
-      count(atividade_principal)
-    ```
-   
-   `r fim_resposta()`
-
-1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    estados <- unique(cidades$estado) %>% sort()
-    
-    regioes <- c(
-      'N', 'NE', 'N', 'N', 'NE', 'NE', 'CO', 'SE', 'CO', 'NE', 
-      'SE', 'CO', 'CO', 'N', 'NE', 'NE', 'NE', 'S', 'SE', 'NE', 
-      'N', 'N', 'S', 'S', 'NE', 'SE', 'N'
-    )
-    
-    names(regioes) <- estados
-    
-    cidades <- cidades %>% 
-      mutate(
-        regiao = factor(regioes[estado])
-      )
-    ```
-    
-    ```{r}
-    cidades %>%
-      distinct(regiao, estado) %>% 
-      arrange(regiao)
-    ```
-    
-   `r fim_resposta()`
-
-
-# Regiões de turismo
-
-1. Quantas são?
+1. Quantas regiões de turismo são?
 
 1. Qual tem mais municípios?
 
@@ -529,6 +552,9 @@ gabarito <- FALSE
     ```
    
    `r fim_resposta()`
+
+
+## Nomes das regiões de turismo
 
 1. Gere uma *tibble* com todos os valores distintos de `regiao_turismo`, sem repetições. 
 
@@ -563,3 +589,192 @@ gabarito <- FALSE
     ```
    
    `r fim_resposta()`
+
+
+## PIB
+
+1. A coluna `pib_capita` é o resultado da divisão de `pib` por `pop_pib`? Use a função `all`.
+
+
+## Carros
+
+1. Quais as $10$ cidades que têm a [maior]{.hl} quantidade de [carros por habitante]{.hl}?
+
+1. Quais as $10$ cidades que têm a [menor]{.hl} quantidade de [carros por habitante]{.hl}?
+
+1. Quais são os tipos destas cidades?
+
+1. Comente os resultados.
+
+
+## Motos
+
+1. Quais as $10$ cidades que têm a [maior]{.hl} quantidade de [motos por habitante]{.hl}?
+
+1. Quais as $10$ cidades que têm a [menor]{.hl} quantidade de [motos por habitante]{.hl}?
+
+1. Quais são os tipos destas cidades?
+
+1. Comente os resultados.
+
+
+## Tratores
+
+1. Quais as $10$ cidades que têm a [maior]{.hl} quantidade de [tratores por habitante]{.hl}? Ignore as cidades que têm zero tratores.
+
+1. Quais as $10$ cidades que têm a [menor]{.hl} quantidade de [carros por habitante]{.hl}? Ignore as cidades que têm zero tratores.
+
+1. Quais são os tipos destas cidades?
+
+1. Comente os resultados.
+
+
+# Visualização
+
+::: {.rmdimportant latex=1}
+
+* Todos os gráficos devem ser feitos com o pacote ggplot2.
+
+* Todos os gráficos devem incluir títulos, rótulos, legendas, e outros elementos para facilitar a compreensão. Imagine que seus gráficos serão publicados em uma revista científica.
+
+:::
+
+
+## População e McDonald's
+
+1. [Apenas para as cidades que têm McDonald's]{.hl}, faça um *scatterplot* de quantidade de McDonald's (no eixo $y$) por população (no eixo $x$).
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## População e Walmart
+
+1. [Apenas para as cidades que têm Walmart]{.hl}, faça um *scatterplot* de quantidade de Walmarts (no eixo $y$) por população (no eixo $x$).
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## IDHM e PIB *per capita*
+
+1. Faça um *scatterplot* de IDHM (no eixo $y$) por PIB *per capita* (no eixo $x$).
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## IDHM e despesas municipais
+
+1. Faça um *scatterplot* de IDHM (no eixo $y$) por despesas municipais (no eixo $x$).
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## IDHM e carros
+
+1. Faça um *scatterplot* de IDHM (no eixo $y$) por quantidade de carros (no eixo $x$).
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## IDHM e motos
+
+1. Faça um *scatterplot* de IDHM (no eixo $y$) por quantidade de motos (no eixo $x$).
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## IDHM e tratores
+
+1. Faça um *scatterplot* de IDHM (no eixo $y$) por quantidade de tratores (no eixo $x$). Ignore as cidades que têm zero tratores.
+
+1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
+
+1. Existe alguma correlação entre as quantidades? Comente.
+
+
+## Correios
+
+1. Faça um histograma da quantidade de agências de correios. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Correios *per capita*
+
+1. Faça um histograma da razão [(número de agências de correio) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Agências bancárias (públicas)
+
+1. Faça um histograma da quantidade de agências bancárias públicas. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Agências bancárias (públicas) *per capita*
+
+1. Faça um histograma da razão [(número de agências bancárias públicas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Agências bancárias (privadas)
+
+1. Faça um histograma da quantidade de agências bancárias privadas. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Agências bancárias (privadas) *per capita*
+
+1. Faça um histograma da razão [(número de agências bancárias privadas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## PIB
+
+1. Faça um histograma do valor do PIB. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## PIB *per capita*
+
+1. Faça um histograma do valor do PIB *per capita*. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## PIB e atividade principal
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} do PIB, com um *boxplot* para cada atividade principal. Faça com que os *boxplots* sejam horizontais, para facilitar a leitura dos nomes das atividades.
+
+1. Comente os resultados.
+
+
+## PIB *per capita* e atividade principal
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} do PIB *per capita*, com um *boxplot* para cada atividade principal. Faça com que os *boxplots* sejam horizontais, para facilitar a leitura dos nomes das atividades.
+
+1. Comente os resultados.
+
+
+## Hotéis e categoria de turismo
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de hotéis, com um *boxplot* para cada categoria de turismo. 
+
+1. Comente os resultados.
