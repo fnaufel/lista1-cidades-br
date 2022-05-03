@@ -1,6 +1,6 @@
 ---
-title: 'Lista avaliativa: R e visualização'
-subtitle: 'Probabilidade e Estatística -- 2022.1'
+title: 'Cidades brasileiras'
+subtitle: 'Lista avaliativa -- Probabilidade e Estatística -- 2022.1'
 author: 'fnaufel'
 email: 'https://fnaufel.github.io/'
 date: '(v. `r format(Sys.Date(), "%d/%m/%Y")`)'
@@ -10,13 +10,7 @@ output:
   # To install these output formats, run
   #   install.packages("devtools")
   #   devtools::install_github("fnaufel/fnaufelRmd")
-  fnaufelRmd::html_report:
-    css:
-      - default
-      - html_files/webex.css
-    includes:
-      after_body: 
-      - html_files/webex.js
+  fnaufelRmd::html_report
 
 ---
 
@@ -55,37 +49,62 @@ st_options(
 # 3 casas decimais em números no texto
 options(fmdigits = 3)
 
-
-library(exercises)
-exercises::iniciar()
-
-gabarito <- TRUE
-gabarito <- FALSE
+# Para mapas interativos
+library(leaflet)
 ```
 
 
 # Instruções {-}
 
-* Veja na tabela abaixo o número da questão que foi sorteada para você. [Se seu número de matrícula não estiver na tabela, entre em contato comigo pelo Telegram.]{.hl}
+* Veja na tabela abaixo os números das questôes que foram sorteadas para você. [Se seu número de matrícula não estiver na tabela, entre em contato comigo pelo Telegram.]{.hl}
 
     ```{r echo=FALSE}
-    tibble::tribble(
-       ~matricula, ~questao,
-      "119060007",       1L,
-      "119060025",       3L,
-      "119060038",       8L,
-      "119060043",       9L,
-      "120060010",       4L,
-      "120060014",       6L,
-      "120060029",       7L,
-      "120060034",      10L,
-      "216060055",       5L,
-      "219060053",       2L
-      ) %>% 
+    set.seed(1235)
+    eda <- sample(1:20)
+    viz1 <- sample(1:20)
+    viz2 <- sample(21:40)
+    mapa <- 1
+    matriculas <- c(
+      '218060052',
+      '115060047',
+      '119060011',
+      '218060076',
+      '119060025',
+      '218060053',
+      '120060005',
+      '020060003',
+      '920060073',
+      '219060086',
+      '220060047',
+      '120060009',
+      '218060070',
+      '020060001',
+      '114060043',
+      '119060007',
+      '220060059',
+      '120060007',
+      '220060063',
+      '118060029'      
+    )
+    
+    tibble(
+      matrícula = matriculas,
+      'análise exploratória' = paste0('2.', as.character(eda), ','),
+      'visualização' = paste0(
+        paste0('3.', as.character(viz1)),
+        ', ',
+        paste0('3.', as.character(viz2)),
+        ','
+      ),
+      'mapa' = '4.1'
+    ) %>% 
+      arrange(matrícula) %>% 
       kbl(
-        digits = 9, 
-        align = 'r', 
-        format.args = list(big.mark = '.')
+        align = 'r',
+        col.names = c(
+          'matrícula',
+          '', '', ''
+        )
       ) %>% 
       kable_paper(
         c('striped', 'hover'),
@@ -93,18 +112,11 @@ gabarito <- FALSE
       )
     ```
 
-* [Todos os alunos devem fazer a questão ["Carregar, limpar, e explorar os dados"](#eda)]{.hl}
-
 * Clique o botão `Code`, no início desta página, para baixar o arquivo Rmd deste documento.
 
-* Certifique-se de que o pacote `fnaufelRmd` está instalado. Use os comandos
-
-    ```{r eval=FALSE}
-    install.packages("devtools")
-    devtools::install_github("fnaufel/fnaufelRmd")
-    ```
-  
 * Edite o arquivo Rmd para resolver as suas questões. 
+
+* Se quiser resolver questões que não foram sorteadas para você, fique à vontade. Na verdade, em alguns casos, uma questão sua pode depender da resposta da questão de outro aluno.
 
 * Escreva o máximo possível sobre o seu raciocínio. Justifique suas respostas.
 
@@ -119,9 +131,62 @@ gabarito <- FALSE
 * Bom trabalho.
 
 
+# Ambiente {-}
+
+* Para gerar um arquivo HTML a partir deste documento, você precisa dos seguintes pacotes do R:
+
+  ```{r echo=FALSE, results='asis'}
+  pacotes <- session_info('attached')$packages$package
+  pacotes_tidy <- getNamespace("tidyverse")$core
+  pacotes <- c(
+    setdiff(pacotes, pacotes_tidy),
+    'fnaufelRmd',
+    'devtools'
+  ) %>% 
+    sort()
+   
+  paste('  * `', pacotes, '`', collapse = '\n\n') %>% 
+    cat()
+  ```
+
+* Se você estiver usando o Ubuntu, você precisa instalar --- [pelo sistema, não pelo R]{.hl} --- o pacote `libgdal-dev`. Faça isto [antes]{.hl} de executar o código abaixo.
+
+* Execute o seguinte código para instalar os pacotes que estão faltando no seu ambiente:
+
+    ```{r message=FALSE}
+    if (!require('devtools'))
+      install.packages('devtools')
+    
+    if (!require('fnaufelRmd'))
+      devtools::install_github("fnaufel/fnaufelRmd")
+    
+    pacotes <- c(
+      'conflicted',
+      'kableExtra',
+      'knitr',
+      'latex2exp',
+      'leaflet',
+      'sessioninfo',
+      'summarytools',
+      'tidyverse'
+    )
+    
+    instalar_se_preciso <- function(x) {
+      
+      if (!require(x, character.only = TRUE))
+        install.packages(x)
+      
+    }
+    
+    invisible(sapply(pacotes, instalar_se_preciso))
+    ```
+
+* Se houver erro na instalação, entre em contato comigo pelo Telegram, [enviando todas as mensagens emitidas quando você executou os comandos]{.hl}.
+
+
 # Leitura e limpeza dos dados
 
-1. Os nomes das colunas originais estão em inglês. Para ver o [dicionário de dados]{.hl} --- informações sobre cada uma das colunas --- visite https://www.kaggle.com/datasets/crisparada/brazilian-cities?select=Data_Dictionary.csv.
+1. Os nomes das colunas originais estão em inglês. Para ver o [dicionário de dados]{.hl} --- documentação sobre cada uma das colunas --- visite https://www.kaggle.com/datasets/crisparada/brazilian-cities?select=Data_Dictionary.csv.
 
 1. Eis uma função para renomear as colunas para português. Ela simplesmente retorna um vetor com os novos nomes, na mesma ordem que as colunas originais.
 
@@ -316,7 +381,7 @@ gabarito <- FALSE
 
 ## Populações
 
-1. A coluna `pop_resid` (população de residentes) é a soma de `pop_resid_bras` (população de residentes brasileiros) com `pop_resid_estr` (população de residentes estrangeiros)? Use a função `all`.
+1. Verifique se a coluna `pop_resid` (população de residentes) é a soma de `pop_resid_bras` (população de residentes brasileiros) com `pop_resid_estr` (população de residentes estrangeiros). Use a função `all`.
 
    `r inicio_resposta()`
    
@@ -334,7 +399,7 @@ gabarito <- FALSE
 
 ## Unidades domésticas
 
-1. A coluna `unidades_domest` (unidades domésticas) é a soma de `unidades_domest_urban` (urbanas) com `unidades_domest_rural` (rurais)? Use a função `all`.
+1. Verifique se a coluna `unidades_domest` (unidades domésticas) é a soma de `unidades_domest_urban` (urbanas) com `unidades_domest_rural` (rurais). Use a função `all`.
 
    `r inicio_resposta()`
    
@@ -461,9 +526,9 @@ gabarito <- FALSE
    `r fim_resposta()`
 
 
-## Regiões geográficas
+## Regiões geográficas {#regioes-geo}
 
-1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
+1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região geográfica (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
 
    `r inicio_resposta()`
    
@@ -593,7 +658,7 @@ gabarito <- FALSE
 
 ## PIB
 
-1. A coluna `pib_capita` é o resultado da divisão de `pib` por `pop_pib`? Use a função `all`.
+1. Verifique se a coluna `pib_capita` é o resultado da divisão de `pib` por `pop_pib`. Use a função `all`.
 
 
 ## Carros
@@ -675,9 +740,13 @@ gabarito <- FALSE
 
 ## Cidades extremas
 
-1. Quais são as cidades de [maior e menor latitude]{.hl}?
+1. Quais são as $10$ cidades de [maior e menor latitude]{.hl}?
 
-1. Quais são as cidades de [maior e menor longitude]{.hl}?
+1. Quais são as $10$ cidades de [maior e menor longitude]{.hl}?
+
+1. Quais são as $10$ cidades de [maior e menor altitude]{.hl}?
+
+1. Responda as perguntas acima [por região geográfica]. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 
 ## Faixas etárias
@@ -783,12 +852,16 @@ gabarito <- FALSE
 
 1. Faça um histograma da quantidade de agências bancárias públicas. Use o número de classes que você achar mais adequado.
 
+1. Compare com a distribuição de agências privadas.
+
 1. Comente os resultados.
 
 
 ## Agências bancárias (públicas) *per capita*
 
 1. Faça um histograma da razão [(número de agências bancárias públicas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Compare com a distribuição de agências privadas.
 
 1. Comente os resultados.
 
@@ -797,12 +870,16 @@ gabarito <- FALSE
 
 1. Faça um histograma da quantidade de agências bancárias privadas. Use o número de classes que você achar mais adequado.
 
+1. Compare com a distribuição de agências públicas.
+
 1. Comente os resultados.
 
 
 ## Agências bancárias (privadas) *per capita*
 
 1. Faça um histograma da razão [(número de agências bancárias privadas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Compare com a distribuição de agências públicas.
 
 1. Comente os resultados.
 
@@ -816,7 +893,7 @@ gabarito <- FALSE
 
 ## Áreas (com facetas)
 
-1. Faça histogramas das áreas das cidades, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+1. Faça histogramas das áreas das cidades, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Comente os resultados.
 
@@ -830,7 +907,7 @@ gabarito <- FALSE
 
 ## Populações (com facetas)
 
-1. Faça histogramas das populações das cidades, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+1. Faça histogramas das populações das cidades, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Comente os resultados.
 
@@ -851,14 +928,14 @@ gabarito <- FALSE
 
 ## Telefones fixos *per capita* (com facetas)
 
-1. Faça histogramas das quantidades de telefones fixos *per capita*, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+1. Faça histogramas das quantidades de telefones fixos *per capita*, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Comente os resultados.
 
 
 ## Assinaturas de TV *per capita* (com facetas)
 
-1. Faça histogramas das quantidades de assinaturas de TV por assinatura *per capita*, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+1. Faça histogramas das quantidades de assinaturas de TV por assinatura *per capita*, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Comente os resultados.
 
@@ -886,14 +963,14 @@ gabarito <- FALSE
 
 ## Populações por região
 
-1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das populações, com um *boxplot* para cada região. 
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das populações, com um *boxplot* para cada região geográfica. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Comente os resultados.
 
 
 ## Densidade demográfica por região
 
-1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das densidades demográficas, com um *boxplot* para cada região. 
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das densidades demográficas, com um *boxplot* para cada região geográfica. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Comente os resultados.
 
@@ -919,7 +996,7 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
-## Hoteis e Uber
+## Hotéis e Uber
 
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de hotéis, com um *boxplot* para cada valor de `uber`. 
 
@@ -933,20 +1010,9 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
-## Cidades por região
+## Cidades por região geográfica
 
-1. Faça um gráfico de barras das quantidades de cidades, com uma barra por região.
-
-1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
-
-1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
-
-1. Comente os resultados.
-
-
-## Populações por região
-
-1. Faça um gráfico de barras das populações totais, com uma barra por região.
+1. Faça um gráfico de barras das quantidades de cidades, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
 
@@ -955,9 +1021,9 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
-## PIB por região
+## Populações por região geográfica
 
-1. Faça um gráfico de barras dos PIBs totais, com uma barra por região.
+1. Faça um gráfico de barras das populações totais, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
 
@@ -966,9 +1032,20 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
-## Produção rural por região
+## PIB por região geográfica
 
-1. Faça um gráfico de barras das produções rurais totais, com uma barra por região.
+1. Faça um gráfico de barras dos PIBs totais, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
+
+1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+
+1. Comente os resultados.
+
+
+## Produção rural por região geográfica
+
+1. Faça um gráfico de barras das produções rurais totais, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
 
@@ -990,18 +1067,18 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
-## Faixas etárias por região
+## Faixas etárias por região geográfica
 
-1. Faça um gráfico de barras da população brasileira, com um [conjunto de barras para cada região]{.hl}.
+1. Faça um gráfico de barras da população brasileira, com um [conjunto de barras para cada região]{.hl}. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Cada conjunto deve ter $6$ barras lado a lado, uma para cada faixa etária. Use o argumento `dodge` na geometria adequada.
 
 1. Comente os resultados.
 
 
-## Faixas etárias por região, proporções
+## Faixas etárias por região geográfica, proporções
 
-1. Faça um gráfico de barras da população brasileira, com uma barra por região.
+1. Faça um gráfico de barras da população brasileira, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
 1. Todas as barras devem ser da mesma altura, e o eixo $y$ deve ir de $0$ até $1$, representando proporções.
 
@@ -1030,7 +1107,7 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
-# Mapas interativos
+# Mapa interativo
 
 ## Marcadores
 
@@ -1038,7 +1115,7 @@ gabarito <- FALSE
 
    * Em inglês: https://rstudio.github.io/leaflet/ (basta ler os $5$ primeiros itens do menu).
    
-   * Em português: ???
+   * Em português: http://sillasgonzaga.com/material/cdr/htmlwidgets.html#leaflet (até "Marcadores").
      
 1. Escolha qualquer uma das questões do tipo "Quais as $10$ cidades...", na [seção de análise exploratória](#eda).
 
@@ -1048,15 +1125,25 @@ gabarito <- FALSE
 
 1. Acrescente outras informações que você achar importantes --- por exemplo, a classificação da cidade na ordenação que a questão pede.
 
-
-```{r}
-library(leaflet)
-
-# Um exemplo, apenas. Substitua com a tibble da sua resposta:
-df <- cidades %>% 
-  filter(
-    estado = 'RJ',
+    ```{r}
+    library(leaflet)
     
-  )
-```
+    # Um exemplo, apenas. Substitua com a tibble da sua resposta:
+    df <- cidades %>% 
+      filter(
+        cidade %in% c('Manaus', 'Brasília', 'Porto Alegre')
+      )
+    
+    # O mapa:
+    leaflet(df) %>% 
+      setView(
+        lng = mean(df$longitude), 
+        lat = mean(df$latitude),
+        zoom = 4
+      ) %>% 
+      addTiles() %>% 
+      addMarkers()
+    ```
+
+1. Faça [um segundo mapa interativo]{.hl} com marcadores para as cidades que satisfazem algum critério que você ache interessante. Use a imaginação.
 
