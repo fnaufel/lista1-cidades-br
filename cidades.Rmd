@@ -102,8 +102,7 @@ library(leaflet)
       kbl(
         align = 'r',
         col.names = c(
-          'matrícula',
-          '', '', ''
+          '', '', '', ''
         )
       ) %>% 
       kable_paper(
@@ -284,7 +283,7 @@ library(leaflet)
 
     ```{r}
     cidades <- read_csv(
-      'dados/BRAZIL_CITIES_REV2022.CSV'
+      'https://github.com/fnaufel/lista1-cidades-br/raw/master/dados/BRAZIL_CITIES_REV2022.CSV'
     ) %>% 
       rename_with(.fn = renomear) %>% 
       mutate(
@@ -315,286 +314,40 @@ library(leaflet)
 
 1. Compare a quantidade de estados com a quantidade de capitais. O que está errado? Conserte a situação.
 
-   `r inicio_resposta()`
-   
-   Como `capital` é uma coluna booleana, usamos `sum` para obter a quantidade de municípios para os quais `capital` é verdadeiro:
-
-    ```{r}
-    cidades %>% 
-      summarize(
-        estados = n_distinct(estado),
-        capitais = sum(capital)
-      )
-    ```
-    
-   As quantidades são diferentes!
-   
-   Listando as capitais com seus respectivos estados:
-   
-    ```{r}
-    cidades %>% 
-      filter(capital) %>% 
-      select(estado, cidade) %>% 
-      arrange(estado)
-    ```
-
-   Em alguns estados, existem cidades --- não-capitais --- que têm o mesmo nome que capitais de outros estados. Estas cidades estão marcadas como capitais.
-   
-    ```{r}
-    repetidas <- cidades %>% 
-      filter(capital) %>% 
-      select(estado, cidade) %>% 
-      arrange(estado) %>% 
-      add_count(estado) %>% 
-      filter(n > 1)
-    
-    repetidas
-    ```
-
-   Vamos consertar:
-   
-    ```{r}
-    nao_capitais <- repetidas %>% 
-      slice(-c(3, 4, 8, 9))
-    
-    cidades <- cidades %>% 
-      mutate(
-        capital = case_when(
-          !(estado %in% nao_capitais$estado) ~ capital, 
-          !(cidade %in% nao_capitais$cidade) ~ capital, 
-          TRUE ~ FALSE
-        )
-      )
-    ```
-   
-   E conferir:
-
-    ```{r}
-    cidades %>% 
-      filter(capital) %>% 
-      select(estado, cidade) %>% 
-      arrange(estado)
-    ```
-   
-   `r fim_resposta()`
-
 
 ## Populações
 
 1. Verifique se a coluna `pop_resid` (população de residentes) é a soma de `pop_resid_bras` (população de residentes brasileiros) com `pop_resid_estr` (população de residentes estrangeiros). Use a função `all`.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    cidades %>% 
-      summarize(
-        all(pop_resid == pop_resid_bras + pop_resid_estr)
-      )
-    ```
-   
-   Sim.
-   
-   `r fim_resposta()`
 
 
 ## Unidades domésticas
 
 1. Verifique se a coluna `unidades_domest` (unidades domésticas) é a soma de `unidades_domest_urban` (urbanas) com `unidades_domest_rural` (rurais). Use a função `all`.
 
-   `r inicio_resposta()`
-   
-    ```{r}
-    cidades %>% 
-      summarize(
-        all(
-          unidades_domest == unidades_domest_urban + unidades_domest_rural
-        )
-      )
-    ```
-
-   Não.
-   
-    ```{r}
-    dif <- cidades %>% 
-      mutate(
-        diferenca = 
-          unidades_domest - unidades_domest_urban - unidades_domest_rural
-      ) %>% 
-      filter(
-        diferenca != 0
-      ) %>% 
-      select(cidade, diferenca)
-    
-    dif
-    
-    dif %>% 
-      distinct(diferenca)
-    ```
-   
-   A diferença nunca é maior que $1$.
-
-   `r fim_resposta()`
-   
 
 ## Categorias de turismo
 
 1. Na coluna `categoria_turismo`, substitua os zeros por `NA` e converta tudo para um [fator ordenado]{.hl} com níveis $E < D < C < B < A$. Use a função `factor`.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    categoria_fator <- cidades %>% 
-      pull(categoria_turismo) %>% 
-      factor(
-        levels = c('E', 'D', 'C', 'B', 'A'),
-        ordered = TRUE
-      )
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        categoria_turismo = categoria_fator
-      )
-    ```
-   
-    ```{r}
-    cidades %>% 
-      count(categoria_turismo)
-    ```
-   
-   `r fim_resposta()`
 
 
 ## Tipos
 
 1. Na coluna `tipo`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
 
-   `r inicio_resposta()`
-   
-    ```{r}
-    tipo_fator <- cidades %>% 
-      pull(tipo)
-
-    tipo_fator[tipo_fator == '0'] <- NA
-    
-    tipo_fator <- factor(tipo_fator, ordered = FALSE)
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        tipo = tipo_fator
-      )
-    ```
-   
-    ```{r}
-    cidades %>% 
-      count(tipo)
-    ```
-   
-   `r fim_resposta()`
-
 
 ## Atividades principais
 
 1. Na coluna `atividade_principal`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    ap_fator <- cidades %>% 
-      pull(atividade_principal)
-
-    ap_fator[ap_fator == '0'] <- NA
-    
-    ap_fator <- factor(ap_fator, ordered = FALSE)
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        atividade_principal = ap_fator
-      )
-    ```
-   
-    ```{r}
-    cidades %>% 
-      count(atividade_principal)
-    ```
-   
-   `r fim_resposta()`
 
 
 ## Regiões geográficas {#regioes-geo}
 
 1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região geográfica (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
 
-   `r inicio_resposta()`
-   
-    ```{r}
-    estados <- unique(cidades$estado) %>% sort()
-    
-    regioes <- c(
-      'N', 'NE', 'N', 'N', 'NE', 'NE', 'CO', 'SE', 'CO', 'NE', 
-      'SE', 'CO', 'CO', 'N', 'NE', 'NE', 'NE', 'S', 'SE', 'NE', 
-      'N', 'N', 'S', 'S', 'NE', 'SE', 'N'
-    )
-    
-    names(regioes) <- estados
-    
-    cidades <- cidades %>% 
-      mutate(
-        regiao = factor(regioes[estado])
-      )
-    ```
-    
-    ```{r}
-    cidades %>%
-      distinct(regiao, estado) %>% 
-      arrange(regiao)
-    ```
-    
-   `r fim_resposta()`
-
 
 ## Regiões de turismo
 
 1. Na coluna `regiao_turismo`, substitua os zeros por `NA`.
-
-   `r inicio_resposta()`
-   
-   Quantos zeros são?
-   
-    ```{r}
-    cidades %>% 
-      count(regiao_turismo == '0')
-    ```
-
-    ```{r}
-    cidades <- cidades %>% 
-      mutate(
-        regiao_turismo = 
-          if_else(
-            regiao_turismo == '0', NA_character_, regiao_turismo
-          )
-      )
-    ```
-   
-   Vamos conferir:
-   
-    ```{r}
-    cidades %>% 
-      count(regiao_turismo == '0')
-    ```
-
-    ```{r}
-    cidades %>% 
-      count(is.na(regiao_turismo))
-    ```
-   
-   `r fim_resposta()`
-   
 
 1. Quantas regiões de turismo são?
 
@@ -606,18 +359,6 @@ library(leaflet)
 
 1. Existe alguma região de turismo contendo cidades de estados diferentes?
 
-   `r inicio_resposta()`
-   
-    ```{r}
-    cidades %>% 
-      filter(!is.na(regiao_turismo)) %>% 
-      group_by(regiao_turismo) %>% 
-      summarise(estados = n_distinct(estado)) %>% 
-      filter(estados > 1)
-    ```
-   
-   `r fim_resposta()`
-
 
 ## Nomes das regiões de turismo
 
@@ -625,35 +366,8 @@ library(leaflet)
 
 1. Quais são as $10$ palavras mais comuns que iniciam os nomes de regiões de turismo? Use a função `word`.
    
-   `r inicio_resposta()`
-   
-    ```{r}
-    mais_comuns <- cidades %>% 
-      distinct(regiao_turismo) %>% 
-      transmute(primeira = word(regiao_turismo)) %>% 
-      count(primeira, sort = TRUE) %>% 
-      head(10)
-    
-    mais_comuns
-    ```
-   
-   `r fim_resposta()`
 
 1. Liste, em ordem alfabética, os nomes completos das regiões de turismo cujos nomes começam com palavras desta lista. 
-
-   `r inicio_resposta()`
-   
-    ```{r}
-    cidades %>% 
-      distinct(regiao_turismo) %>% 
-      filter(
-        word(regiao_turismo) %in% mais_comuns$primeira
-      ) %>% 
-      select(regiao_turismo) %>% 
-      arrange(regiao_turismo)
-    ```
-   
-   `r fim_resposta()`
 
 
 ## PIB
