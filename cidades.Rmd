@@ -3,7 +3,7 @@ title: 'Lista avaliativa: R e visualização'
 subtitle: 'Probabilidade e Estatística -- 2022.1'
 author: 'fnaufel'
 email: 'https://fnaufel.github.io/'
-date: '27/04/2022 (v. `r format(Sys.Date(), "%d/%m/%Y")`)'
+date: '(v. `r format(Sys.Date(), "%d/%m/%Y")`)'
 lang: 'pt-br'
 
 output: 
@@ -598,9 +598,9 @@ gabarito <- FALSE
 
 ## Carros
 
-1. Quais as $10$ cidades que têm a [maior]{.hl} quantidade de [carros por habitante]{.hl}?
+1. Quais as $10$ cidades que têm a [maior quantidade de carros por habitante]{.hl}?
 
-1. Quais as $10$ cidades que têm a [menor]{.hl} quantidade de [carros por habitante]{.hl}?
+1. Quais as $10$ cidades que têm a [menor quantidade de carros por habitante]{.hl}?
 
 1. Quais são os tipos destas cidades?
 
@@ -609,9 +609,9 @@ gabarito <- FALSE
 
 ## Motos
 
-1. Quais as $10$ cidades que têm a [maior]{.hl} quantidade de [motos por habitante]{.hl}?
+1. Quais as $10$ cidades que têm a [maior quantidade de motos por habitante]{.hl}?
 
-1. Quais as $10$ cidades que têm a [menor]{.hl} quantidade de [motos por habitante]{.hl}?
+1. Quais as $10$ cidades que têm a [menor quantidade de motos por habitante]{.hl}?
 
 1. Quais são os tipos destas cidades?
 
@@ -620,11 +620,73 @@ gabarito <- FALSE
 
 ## Tratores
 
-1. Quais as $10$ cidades que têm a [maior]{.hl} quantidade de [tratores por habitante]{.hl}? Ignore as cidades que têm zero tratores.
+1. Quais as $10$ cidades que têm a [maior quantidade de tratores por habitante]{.hl}? Ignore as cidades que têm zero tratores.
 
-1. Quais as $10$ cidades que têm a [menor]{.hl} quantidade de [carros por habitante]{.hl}? Ignore as cidades que têm zero tratores.
+1. Quais as $10$ cidades que têm a [menor quantidade de tratores por habitante]{.hl}? Ignore as cidades que têm zero tratores.
 
 1. Quais são os tipos destas cidades?
+
+1. Comente os resultados.
+
+
+## Áreas
+
+1. Quais as $10$ cidades que têm a [maior área]{.hl}?
+
+1. Quais as $10$ cidades que têm a [menor área]{.hl}?
+
+1. Quais são os tipos destas cidades?
+
+1. Comente os resultados.
+
+
+## Produção rural
+
+1. Quais as $10$ cidades que têm a [maior produção rural]{.hl}?
+
+1. Quais as $10$ cidades que têm a [menor produção rural]{.hl}?
+
+1. Quais são os tipos destas cidades? Ignore as cidades que têm zero produção rural.
+
+1. Comente os resultados.
+
+
+## Produção rural *per capita*
+
+1. Quais as $10$ cidades que têm a [maior produção rural *per capita*]{.hl}?
+
+1. Quais as $10$ cidades que têm a [menor produção rural *per capita*]{.hl}?
+
+1. Quais são os tipos destas cidades? Ignore as cidades que têm zero produção rural.
+
+1. Comente os resultados.
+
+
+## Densidade demográfica
+
+1. Quais as $10$ cidades que têm a [maior densidade demográfica]{.hl}?
+
+1. Quais as $10$ cidades que têm a [menor densidade demográfica]{.hl}?
+
+1. Quais são os tipos destas cidades? 
+
+1. Comente os resultados.
+
+
+## Cidades extremas
+
+1. Quais são as cidades de [maior e menor latitude]{.hl}?
+
+1. Quais são as cidades de [maior e menor longitude]{.hl}?
+
+
+## Faixas etárias
+
+1. Quais as $10$ cidades com a [maior proporção de idosos (60 anos ou mais)]{.hl}?
+
+1. Quais as $10$ cidades com a [menor proporção de idosos (60 anos ou mais)]{.hl}?
+
+1. Quais são os tipos destas cidades? 
 
 1. Comente os resultados.
 
@@ -745,6 +807,34 @@ gabarito <- FALSE
 1. Comente os resultados.
 
 
+## Áreas
+
+1. Faça um histograma das áreas das cidades. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Áreas (com facetas)
+
+1. Faça histogramas das áreas das cidades, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Populações
+
+1. Faça um histograma das populações das cidades. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Populações (com facetas)
+
+1. Faça histogramas das populações das cidades, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
 ## PIB
 
 1. Faça um histograma do valor do PIB. Use o número de classes que você achar mais adequado.
@@ -755,6 +845,20 @@ gabarito <- FALSE
 ## PIB *per capita*
 
 1. Faça um histograma do valor do PIB *per capita*. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Telefones fixos *per capita* (com facetas)
+
+1. Faça histogramas das quantidades de telefones fixos *per capita*, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
+
+1. Comente os resultados.
+
+
+## Assinaturas de TV *per capita* (com facetas)
+
+1. Faça histogramas das quantidades de assinaturas de TV por assinatura *per capita*, [facetados por região geográfica]{.hl}. Use o número de classes que você achar mais adequado.
 
 1. Comente os resultados.
 
@@ -778,3 +882,181 @@ gabarito <- FALSE
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de hotéis, com um *boxplot* para cada categoria de turismo. 
 
 1. Comente os resultados.
+
+
+## Populações por região
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das populações, com um *boxplot* para cada região. 
+
+1. Comente os resultados.
+
+
+## Densidade demográfica por região
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das densidades demográficas, com um *boxplot* para cada região. 
+
+1. Comente os resultados.
+
+
+## Carros *per capita* por tipo de cidade
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de carros *per capita*, com um *boxplot* para cada tipo de cidade. 
+
+1. Comente os resultados.
+
+
+## Motos *per capita* por tipo de cidade
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de motos *per capita*, com um *boxplot* para cada tipo de cidade. 
+
+1. Comente os resultados.
+
+
+## Tratores *per capita* por tipo de cidade
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de tratores *per capita*, com um *boxplot* para cada tipo de cidade. 
+
+1. Comente os resultados.
+
+
+## Hoteis e Uber
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de hotéis, com um *boxplot* para cada valor de `uber`. 
+
+1. Comente os resultados.
+
+
+## PIB *per capita* e Uber
+
+1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} do valor do PIB *per capita*, com um *boxplot* para cada valor de `uber`. 
+
+1. Comente os resultados.
+
+
+## Cidades por região
+
+1. Faça um gráfico de barras das quantidades de cidades, com uma barra por região.
+
+1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+
+1. Comente os resultados.
+
+
+## Populações por região
+
+1. Faça um gráfico de barras das populações totais, com uma barra por região.
+
+1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+
+1. Comente os resultados.
+
+
+## PIB por região
+
+1. Faça um gráfico de barras dos PIBs totais, com uma barra por região.
+
+1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+
+1. Comente os resultados.
+
+
+## Produção rural por região
+
+1. Faça um gráfico de barras das produções rurais totais, com uma barra por região.
+
+1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+
+1. Comente os resultados.
+
+
+## Faixas etárias
+
+1. Faça um gráfico de barras da população brasileira, com uma barra por faixa etária.
+
+1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura.
+
+1. Em qual ordem você acha que as barras devem aparecer? Por quê?
+
+1. Comente os resultados.
+
+
+## Faixas etárias por região
+
+1. Faça um gráfico de barras da população brasileira, com um [conjunto de barras para cada região]{.hl}.
+
+1. Cada conjunto deve ter $6$ barras lado a lado, uma para cada faixa etária. Use o argumento `dodge` na geometria adequada.
+
+1. Comente os resultados.
+
+
+## Faixas etárias por região, proporções
+
+1. Faça um gráfico de barras da população brasileira, com uma barra por região.
+
+1. Todas as barras devem ser da mesma altura, e o eixo $y$ deve ir de $0$ até $1$, representando proporções.
+
+1. Cada barra deve ser subdividida em faixas horizontais de cores diferentes, uma faixa colorida para cada faixa etária, de acordo com as proporções de cada faixa etária em cada região.
+
+1. Comente os resultados.
+
+
+## Faixas etárias por tipo de cidade
+
+1. Faça um gráfico de barras da população brasileira, com um [conjunto de barras para cada tipo de cidade]{.hl}.
+
+1. Cada conjunto deve ter $6$ barras lado a lado, uma para cada faixa etária. Use o argumento `dodge` na geometria adequada.
+
+1. Comente os resultados.
+
+
+## Faixas etárias por tipo de cidade, proporções
+
+1. Faça um gráfico de barras da população brasileira, com uma barra por tipo de cidade.
+
+1. Todas as barras devem ser da mesma altura, e o eixo $y$ deve ir de $0$ até $1$, representando proporções.
+
+1. Cada barra deve ser subdividida em faixas horizontais de cores diferentes, uma faixa colorida para cada faixa etária, de acordo com as proporções de cada faixa etária em cada tipo de cidade.
+
+1. Comente os resultados.
+
+
+# Mapas interativos
+
+## Marcadores
+
+1. Leia algum tutorial sobre o pacote `leaflet`:
+
+   * Em inglês: https://rstudio.github.io/leaflet/ (basta ler os $5$ primeiros itens do menu).
+   
+   * Em português: ???
+     
+1. Escolha qualquer uma das questões do tipo "Quais as $10$ cidades...", na [seção de análise exploratória](#eda).
+
+1. Resolva a questão e modifique o código abaixo para criar marcadores mostrando as cidades da resposta, [rotulados com os nomes das cidades]{.hl} (use o argumento `label`).
+
+1. Quando o usuário clicar o *mouse* sobre a cidade, deve aparecer a informação relevante pedida pela questão (use o argumento `popup`).
+
+1. Acrescente outras informações que você achar importantes --- por exemplo, a classificação da cidade na ordenação que a questão pede.
+
+
+```{r}
+library(leaflet)
+
+# Um exemplo, apenas. Substitua com a tibble da sua resposta:
+df <- cidades %>% 
+  filter(
+    estado = 'RJ',
+    
+  )
+```
+
