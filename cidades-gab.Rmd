@@ -60,6 +60,9 @@ library(leaflet)
 
 library(exercises)
 exercises::iniciar()
+
+# Para gráficos lado a lado
+library(patchwork)
 ```
 
 
@@ -901,7 +904,9 @@ exercises::iniciar()
           subtitle = '(escala logarítmica)',
           x = 'agências',
           y = NULL
-        )
+        ) +
+        ylim(0, 2500) +
+        theme(axis.text.x = element_text(angle = 45))
     
     publicas
     ```
@@ -912,45 +917,9 @@ exercises::iniciar()
 
 1. Compare com a distribuição de agências privadas.
 
-1. Comente os resultados.
-
-
-## Agências bancárias (públicas) *per capita*
-
-1. Faça um histograma da razão [(número de agências bancárias públicas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
-
-1. Compare com a distribuição de agências privadas.
-
-1. Comente os resultados.
-
-
-## Agências bancárias (privadas)
-
-1. Faça um histograma da quantidade de agências bancárias privadas. Use o número de classes que você achar mais adequado.
-
    `r inicio_resposta()`
    
-   Existem muitas cidades com zero agências privadas:
-   
-    ```{r}
-    cidades %>% 
-      count(agencias_priv)
-    ```
-   
-   Vamos ignorá-las:
-   
-    ```{r}
-    cidades %>% 
-      filter(agencias_priv > 0) %>% 
-      ggplot() +
-        geom_histogram(aes(x = agencias_priv))
-    ```
-   
-   Ainda assim, a grande quantidade de cidades com só uma agência faz o histograma ficar não-interessante. 
-   
-   Vamos fazer um histograma do [logaritmo]{.hl} do número de agências. 
-   
-    ```{r}
+    ```{r histograma-privadas, include=FALSE}
     privadas <- cidades %>% 
       filter(agencias_priv > 0) %>% 
       mutate(log_priv = log(agencias_priv, 2)) %>% 
@@ -968,58 +937,19 @@ exercises::iniciar()
           subtitle = '(escala logarítmica)',
           x = 'agências',
           y = NULL
-        )
+        ) +
+        ylim(0, 2500) +
+        theme(axis.text.x = element_text(angle = 45))
     
     privadas
     ```
-
-   Perceba como os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos.
    
-   `r fim_resposta()`
-
-1. Compare com a distribuição de agências públicas.
-
-   `r inicio_resposta()`
-   
-   [Veja a distribuição de agências públicas aqui.](#ag%C3%AAncias-banc%C3%A1rias-p%C3%BAblicas)
-   
-   Vamos sobrepor os histogramas:
+   [Veja a distribuição de agências privadas aqui.](#ag%C3%AAncias-banc%C3%A1rias-privadas)
 
     ```{r}
-    cidades %>% 
-      filter(
-        agencias_priv > 0,
-        agencias_publ > 0
-      ) %>% 
-      mutate(log_priv = log(agencias_priv, 2)) %>% 
-      mutate(log_publ = log(agencias_publ, 2)) %>% 
-      ggplot() +
-        geom_histogram(
-          aes(x = log_publ, fill = 'publ'),
-          breaks = 0:10,
-          alpha = .2
-        ) +
-        geom_histogram(
-          aes(x = log_priv, fill = 'priv'),
-          breaks = 0:10,
-          alpha = .3
-        ) +
-        scale_x_continuous(
-          labels = function(x) 2^x,
-          breaks = 0:10
-        ) +
-        scale_fill_discrete(
-          type = c('blue', 'red')
-        ) +
-        labs(
-          title = 'Quantidade de agências',
-          subtitle = '(escala logarítmica)',
-          fill = NULL,
-          x = 'agências',
-          y = NULL
-        )
+    privadas + publicas
     ```
-
+   
    Vamos ver alguma tabelas.
    
    Totais de agências:
@@ -1063,7 +993,270 @@ exercises::iniciar()
     nrow(cidades)
     ```
    
-   Ou seja, [cerca de $`r (100 * 2233/nrow(cidades)) %>% fm(0)`\%$ de cidades sem agências bancárias, nem privadas, nem públicas!]{.hl}
+   Ou seja, [cerca de $`r (100 * 2233/nrow(cidades)) %>% fm(0)`\%$ de cidades não têm agências bancárias, nem privadas, nem públicas!]{.hl}
+   
+   Aliás, existe alguma cidade que tenha agência privada, mas não pública? Quantas?
+   
+    ```{r}
+    cidades %>% 
+      filter(
+        agencias_priv > 0 & agencias_publ == 0
+      ) %>% 
+      select(cidade, estado, starts_with('agencias'))
+    ```
+   
+   E existe alguma cidade que tenha agência pública, mas não privada? Quantas?
+   
+    ```{r}
+    cidades %>% 
+      filter(
+        agencias_priv == 0 & agencias_publ > 0
+      ) %>% 
+      select(cidade, estado, starts_with('agencias'))
+    ```
+
+   `r fim_resposta()`
+
+1. Comente os resultados.
+
+
+## Agências bancárias (públicas) *per capita*
+
+1. Faça um histograma da razão [(número de agências bancárias públicas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
+
+   `r inicio_resposta()`
+   
+    ```{r privadas-per-capita, include=FALSE}
+    privadaspc <- cidades %>% 
+      filter(agencias_priv > 0) %>% 
+      mutate(
+        privadas_per_capita = agencias_priv / pop_resid
+      ) %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = privadas_per_capita),
+          breaks = seq(0, .0009, .00005)
+        ) +
+        labs(
+          title = 'Agências privadas per capita',
+          x = 'agências',
+          y = NULL
+        ) +
+        theme(axis.text.x = element_text(angle = 45)) +
+        scale_y_continuous(
+          breaks = seq(0, 1250, 250),
+          limits = c(0, 1250)
+        )
+    
+    privadaspc
+    ```
+   
+   Existem muitas cidades com zero agências públicas:
+   
+    ```{r}
+    cidades %>% 
+      count(agencias_publ)
+    ```
+   
+   Vamos ignorá-las.
+   
+    ```{r}
+    publicaspc <- cidades %>% 
+      filter(agencias_publ > 0) %>% 
+      mutate(
+        publicas_per_capita = agencias_publ / pop_resid
+      ) %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = publicas_per_capita),
+          breaks = seq(0, .0009, .00005)
+        ) +
+        labs(
+          title = 'Agências públicas per capita',
+          x = 'agências',
+          y = NULL
+        ) +
+        theme(axis.text.x = element_text(angle = 45))
+    
+    publicaspc
+    ```
+   
+   `r fim_resposta()`
+
+1. Compare com a distribuição de agências privadas.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    privadaspc + publicaspc
+    ```
+
+   Para quase todos os valores de agências *per capita*, existem mais cidades com agências públicas do que cidades com agências privadas. 
+   
+   Isto é consequência de que, no total, [existem mais cidades atendidas por bancos públicos do que por bancos privados](#ag%C3%AAncias-banc%C3%A1rias-p%C3%BAblicas).
+   
+   Mas eu devia ter pedido um *scatterplot* de agências por população para um *insight* interessante.
+   
+   Aqui, descartamos as cidades com mais de $3$ milhões de habitantes.
+   
+    ```{r}
+    cidades %>% 
+      filter(
+        agencias_priv > 0,
+        agencias_publ > 0,
+        pop_resid < 3e6
+      ) %>% 
+      ggplot() +
+        geom_point(
+          aes(
+            x = pop_resid, 
+            y = agencias_publ, 
+            color = 'publ'
+          ),
+          alpha = .4
+        ) +
+        geom_smooth(
+          aes(
+            x = pop_resid, 
+            y = agencias_publ, 
+            color = 'publ'
+          ),
+          method = 'lm',
+          se = FALSE
+        ) +
+        geom_point(
+          aes(
+            x = pop_resid, 
+            y = agencias_priv, 
+            color = 'priv'
+          ),
+          alpha = .2
+        ) +
+        geom_smooth(
+          aes(
+            x = pop_resid, 
+            y = agencias_priv, 
+            color = 'priv'
+          ),
+          method = 'lm',
+          se = FALSE
+        ) +
+        scale_color_discrete(
+          type = c('blue', 'red')
+        ) +
+        scale_x_continuous(
+          breaks = seq(0, 3e6, .5e6),
+          labels = scales::label_number(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        ) +
+        labs(
+          title = 'Agências bancárias por população',
+          x = 'população',
+          y = 'agências',
+          color = NULL
+        )
+    ```
+   
+   As retas mostram como o número de agências aumenta à medida que a população aumenta.
+   
+   Para os bancos privados, o aumento é mais rápido.
+   
+   Em outras palavras: [para uma mesma população]{.hl}, existem, em média, [mais agências privadas do que públicas]{.hl}, e, quanto maior a população, maior a diferença.
+
+   `r fim_resposta()`
+
+1. Comente os resultados.
+
+
+## Agências bancárias (privadas)
+
+1. Faça um histograma da quantidade de agências bancárias privadas. Use o número de classes que você achar mais adequado.
+
+   `r inicio_resposta()`
+   
+   Existem muitas cidades com zero agências privadas:
+   
+    ```{r}
+    cidades %>% 
+      count(agencias_priv)
+    ```
+   
+   Vamos ignorá-las:
+   
+    ```{r}
+    cidades %>% 
+      filter(agencias_priv > 0) %>% 
+      ggplot() +
+        geom_histogram(aes(x = agencias_priv))
+    ```
+   
+   Ainda assim, a grande quantidade de cidades com só uma agência faz o histograma ficar não-interessante. 
+   
+   Vamos fazer um histograma do [logaritmo]{.hl} do número de agências. 
+   
+    ```{r ref.label='histograma-privadas'}
+    ```
+
+   Perceba como os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos.
+   
+   `r fim_resposta()`
+
+1. Compare com a distribuição de agências públicas.
+
+   `r inicio_resposta()`
+   
+   [Veja a distribuição de agências públicas aqui.](#ag%C3%AAncias-banc%C3%A1rias-p%C3%BAblicas)
+
+    ```{r}
+    privadas + publicas
+    ```
+   
+   Vamos ver alguma tabelas.
+   
+   Totais de agências:
+   
+    ```{r}
+    cidades %>% 
+      summarize(
+        privadas = sum(agencias_priv),
+        públicas = sum(agencias_publ)
+      )
+    ```
+   
+   [No total, existem mais agências de bancos privados!]{.hl}
+   
+   Quantidade de cidades atendidas:
+   
+    ```{r}
+    cidades %>% 
+      summarize(
+        privadas = sum(agencias_priv > 0),
+        públicas = sum(agencias_publ > 0)
+      )
+    ```
+   
+   [Existem mais cidades com pelo menos uma agência de banco público do que cidades com pelo menos uma agência de banco privado.]{.hl}
+   
+   Ou, comparando a quantidade de cidades [sem]{.hl} agências:
+   
+    ```{r}
+    cidades %>% 
+      summarize(
+        sem_privadas = sum(agencias_priv == 0),
+        sem_públicas = sum(agencias_publ == 0),
+        sem_qualquer = sum(agencias_publ == 0 & agencias_priv == 0)
+      )
+    ```
+   
+   Lembre-se de que o total de cidades é
+   
+    ```{r}
+    nrow(cidades)
+    ```
+   
+   Ou seja, [cerca de $`r (100 * 2233/nrow(cidades)) %>% fm(0)`\%$ de cidades não têm agências bancárias, nem privadas, nem públicas!]{.hl}
    
    Aliás, existe alguma cidade que tenha agência privada, mas não pública? Quantas?
    
@@ -1094,7 +1287,105 @@ exercises::iniciar()
 
 1. Faça um histograma da razão [(número de agências bancárias privadas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
 
+   `r inicio_resposta()`
+   
+   Existem muitas cidades com zero agências privadas:
+   
+    ```{r}
+    cidades %>% 
+      count(agencias_priv)
+    ```
+   
+   Vamos ignorá-las.
+   
+    ```{r ref.label='privadas-per-capita'}
+    ```
+   
+   `r fim_resposta()`
+
 1. Compare com a distribuição de agências públicas.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    privadaspc + publicaspc
+    ```
+
+   Para quase todos os valores de agências *per capita*, existem mais cidades com agências públicas do que cidades com agências privadas. 
+   
+   Isto é consequência de que, no total, [existem mais cidades atendidas por bancos públicos do que por bancos privados](#ag%C3%AAncias-banc%C3%A1rias-p%C3%BAblicas).
+   
+   Mas eu devia ter pedido um *scatterplot* de agências por população para um *insight* interessante.
+   
+   Aqui, descartamos as cidades com mais de $3$ milhões de habitantes.
+   
+    ```{r}
+    cidades %>% 
+      filter(
+        agencias_priv > 0,
+        agencias_publ > 0,
+        pop_resid < 3e6
+      ) %>% 
+      ggplot() +
+        geom_point(
+          aes(
+            x = pop_resid, 
+            y = agencias_publ, 
+            color = 'publ'
+          ),
+          alpha = .4
+        ) +
+        geom_smooth(
+          aes(
+            x = pop_resid, 
+            y = agencias_publ, 
+            color = 'publ'
+          ),
+          method = 'lm',
+          se = FALSE
+        ) +
+        geom_point(
+          aes(
+            x = pop_resid, 
+            y = agencias_priv, 
+            color = 'priv'
+          ),
+          alpha = .2
+        ) +
+        geom_smooth(
+          aes(
+            x = pop_resid, 
+            y = agencias_priv, 
+            color = 'priv'
+          ),
+          method = 'lm',
+          se = FALSE
+        ) +
+        scale_color_discrete(
+          type = c('blue', 'red')
+        ) +
+        scale_x_continuous(
+          breaks = seq(0, 3e6, .5e6),
+          labels = scales::label_number(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        ) +
+        labs(
+          title = 'Agências bancárias por população',
+          x = 'população',
+          y = 'agências',
+          color = NULL
+        )
+    ```
+   
+   As retas mostram como o número de agências aumenta à medida que a população aumenta.
+   
+   Para os bancos privados, o aumento é mais rápido.
+   
+   Em outras palavras: [para uma mesma população]{.hl}, existem, em média, [mais agências privadas do que públicas]{.hl}, e, quanto maior a população, maior a diferença.
+
+   `r fim_resposta()`
 
 1. Comente os resultados.
 
