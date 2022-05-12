@@ -883,36 +883,18 @@ exercises::iniciar()
    
    Vamos fazer um histograma do [logaritmo]{.hl} do número de agências. 
    
-   Criando uma nova coluna:
-   
     ```{r}
-    cidades %>% 
+    publicas <- cidades %>% 
       filter(agencias_publ > 0) %>% 
-      mutate(log_publ = log(agencias_publ)) %>% 
+      mutate(log_publ = log(agencias_publ, 2)) %>% 
       ggplot() +
         geom_histogram(
           aes(x = log_publ),
-          breaks = 0:8
+          breaks = 0:10
         ) +
-        labs(
-          title = 'Quantidade de agências públicas (log)',
-          x = TeX('$\\log_{10}$ agências'),
-          y = NULL
-        )
-    ```
-   
-   Ou usando a coluna original, mudando a escala do gráfico:
-
-    ```{r}
-    cidades %>% 
-      filter(agencias_publ > 0) %>% 
-      ggplot() +
-        geom_histogram(
-          aes(x = agencias_publ),
-          breaks = c(1:10, 20, 50, 100, 500, 1000)
-        ) +
-        scale_x_log10(
-          breaks = c(1:10, 20, 50, 100, 500, 1000)
+        scale_x_continuous(
+          labels = function(x) 2^x,
+          breaks = 0:10
         ) +
         labs(
           title = 'Quantidade de agências públicas',
@@ -920,12 +902,12 @@ exercises::iniciar()
           x = 'agências',
           y = NULL
         )
+    
+    publicas
     ```
 
-   Perceba que, neste último gráfico, [os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos, mas o espaçamento é logarítmico]{.hl}. Além disso, escolhi manualmente os limites das barras.
+   Perceba como os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos.
    
-   Qual dos dois gráficos você acha melhor?
-
    `r fim_resposta()`
 
 1. Compare com a distribuição de agências privadas.
@@ -968,36 +950,18 @@ exercises::iniciar()
    
    Vamos fazer um histograma do [logaritmo]{.hl} do número de agências. 
    
-   Criando uma nova coluna:
-   
     ```{r}
-    cidades %>% 
+    privadas <- cidades %>% 
       filter(agencias_priv > 0) %>% 
-      mutate(log_priv = log(agencias_priv)) %>% 
+      mutate(log_priv = log(agencias_priv, 2)) %>% 
       ggplot() +
         geom_histogram(
           aes(x = log_priv),
-          breaks = 0:8
+          breaks = 0:10
         ) +
-        labs(
-          title = 'Quantidade de agências privadas (log)',
-          x = TeX('$\\log_{10}$ agências'),
-          y = NULL
-        )
-    ```
-   
-   Ou usando a coluna original, mudando a escala do gráfico:
-
-    ```{r}
-    cidades %>% 
-      filter(agencias_priv > 0) %>% 
-      ggplot() +
-        geom_histogram(
-          aes(x = agencias_priv),
-          breaks = c(1:10, 20, 50, 100, 500, 1000)
-        ) +
-        scale_x_log10(
-          breaks = c(1:10, 20, 50, 100, 500, 1000)
+        scale_x_continuous(
+          labels = function(x) 2^x,
+          breaks = 0:10
         ) +
         labs(
           title = 'Quantidade de agências privadas',
@@ -1005,12 +969,12 @@ exercises::iniciar()
           x = 'agências',
           y = NULL
         )
+    
+    privadas
     ```
 
-   Perceba que, neste último gráfico, [os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos, mas o espaçamento é logarítmico]{.hl}. Além disso, escolhi manualmente os limites das barras.
+   Perceba como os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos.
    
-   Qual dos dois gráficos você acha melhor?
-
    `r fim_resposta()`
 
 1. Compare com a distribuição de agências públicas.
@@ -1019,7 +983,44 @@ exercises::iniciar()
    
    [Veja a distribuição de agências públicas aqui.](#ag%C3%AAncias-banc%C3%A1rias-p%C3%BAblicas)
    
-   Na verdade, é mais fácil comparar as tabelas do que os histogramas:
+   Vamos sobrepor os histogramas:
+
+    ```{r}
+    cidades %>% 
+      filter(
+        agencias_priv > 0,
+        agencias_publ > 0
+      ) %>% 
+      mutate(log_priv = log(agencias_priv, 2)) %>% 
+      mutate(log_publ = log(agencias_publ, 2)) %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = log_publ, fill = 'publ'),
+          breaks = 0:10,
+          alpha = .2
+        ) +
+        geom_histogram(
+          aes(x = log_priv, fill = 'priv'),
+          breaks = 0:10,
+          alpha = .3
+        ) +
+        scale_x_continuous(
+          labels = function(x) 2^x,
+          breaks = 0:10
+        ) +
+        scale_fill_discrete(
+          type = c('blue', 'red')
+        ) +
+        labs(
+          title = 'Quantidade de agências',
+          subtitle = '(escala logarítmica)',
+          fill = NULL,
+          x = 'agências',
+          y = NULL
+        )
+    ```
+
+   Vamos ver alguma tabelas.
    
    Totais de agências:
    
@@ -1031,7 +1032,7 @@ exercises::iniciar()
       )
     ```
    
-   No total, existem mais agências de bancos privados!
+   [No total, existem mais agências de bancos privados!]{.hl}
    
    Quantidade de cidades atendidas:
    
@@ -1043,7 +1044,7 @@ exercises::iniciar()
       )
     ```
    
-   Existem mais cidades com pelo menos uma agência de banco público do que cidades com pelo menos uma agência de banco privado.
+   [Existem mais cidades com pelo menos uma agência de banco público do que cidades com pelo menos uma agência de banco privado.]{.hl}
    
    Ou, comparando a quantidade de cidades [sem]{.hl} agências:
    
@@ -1062,7 +1063,7 @@ exercises::iniciar()
     nrow(cidades)
     ```
    
-   o que dá cerca de $`r (100 * 2233/nrow(cidades)) %>% fm(0)`\%$ de cidades sem agências bancárias, nem privadas, nem públicas!
+   Ou seja, [cerca de $`r (100 * 2233/nrow(cidades)) %>% fm(0)`\%$ de cidades sem agências bancárias, nem privadas, nem públicas!]{.hl}
    
    Aliás, existe alguma cidade que tenha agência privada, mas não pública? Quantas?
    
