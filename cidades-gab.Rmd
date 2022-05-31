@@ -677,7 +677,133 @@ library(patchwork)
 
 1. Quais as $10$ cidades que têm a [maior quantidade de carros por habitante]{.hl}?
 
+   `r inicio_resposta()`
+   
+   Se usarmos `pop_regular`, algumas cidades têm zero neste campo:
+   
+    ```{r}
+    cidades %>% 
+      mutate(
+        carros_por_habitante = carros / pop_regular
+      ) %>% 
+      slice_max(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, pop_regular)
+    ```
+
+   Vamos excluí-las:
+   
+    ```{r}
+    carros_pop_regular <- cidades %>% 
+      filter(pop_regular > 0) %>% 
+      mutate(
+        carros_por_habitante = carros / pop_regular
+      ) %>% 
+      slice_max(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, tipo)
+    
+    carros_pop_regular
+    ```   
+
+   Ou podemos usar a população residente, também eliminando as cidades com zero neste campo:
+   
+    ```{r}
+    carros_pop_resid <- cidades %>% 
+      filter(pop_resid > 0) %>% 
+      mutate(
+        carros_por_habitante = carros / pop_regular
+      ) %>% 
+      slice_max(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, tipo)
+    
+    carros_pop_resid
+    ```      
+
+   Ou podemos usar a população estimada, onde as cidades com zero habitantes têm zero carros --- e o R calcula $0/0$ como `NaN`, não como `Inf`:
+   
+    ```{r}
+    carros_pop_est <- cidades %>% 
+      mutate(
+        carros_por_habitante = carros / pop_estimada
+      ) %>% 
+      slice_max(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, tipo)
+    
+    carros_pop_est
+    ```   
+
+   As duas primeiras maneiras dão o mesmo resultado:
+   
+    ```{r}
+    all(carros_pop_regular$cidade == carros_pop_resid$cidade)
+    ```
+   
+   Usando a população estimada, não há nenhuma cidade em comum com os resultados das duas primeiras maneiras:
+   
+    ```{r}
+    intersect(carros_pop_regular$cidade, carros_pop_est$cidade)
+    ```
+   
+   `r fim_resposta()`
+
 1. Quais as $10$ cidades que têm a [menor quantidade de carros por habitante]{.hl}?
+
+   `r inicio_resposta()`
+   
+   Vamos ignorar as cidades com zero carros.
+   
+   Usando a população regular:
+   
+    ```{r}
+    carros_pop_regular <- cidades %>%
+      filter(carros > 0) %>% 
+      mutate(
+        carros_por_habitante = carros / pop_regular
+      ) %>% 
+      slice_min(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, tipo)
+    
+    carros_pop_regular
+    ```
+
+   Usando a população residente:
+   
+    ```{r}
+    carros_pop_resid <- cidades %>% 
+      filter(carros > 0) %>% 
+      mutate(
+        carros_por_habitante = carros / pop_regular
+      ) %>% 
+      slice_min(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, tipo)
+    
+    carros_pop_resid
+    ```      
+
+   Usando a população estimada:
+   
+    ```{r}
+    carros_pop_est <- cidades %>% 
+      filter(carros > 0) %>% 
+      mutate(
+        carros_por_habitante = carros / pop_estimada
+      ) %>% 
+      slice_min(carros_por_habitante, n = 10) %>% 
+      select(cidade, estado, carros_por_habitante, tipo)
+    
+    carros_pop_est
+    ```   
+
+   Vamos comparar:
+   
+    ```{r}
+    tibble(
+      regular = carros_pop_regular$cidade,
+      resid = carros_pop_resid$cidade,
+      estim = carros_pop_est$cidade
+    )
+    ```
+   
+   `r fim_resposta()`
 
 1. Quais são os tipos destas cidades?
 
@@ -754,11 +880,141 @@ library(patchwork)
 
 1. Quais são as $10$ cidades de [maior e menor latitude]{.hl}?
 
+   `r inicio_resposta()`
+   
+   Maior latitude:
+   
+    ```{r}
+    cidades %>% 
+      slice_max(latitude, n = 10) %>% 
+      select(cidade, estado, latitude)    
+    ```
+
+   Menor latitude:
+   
+    ```{r}
+    cidades %>% 
+      slice_min(latitude, n = 10) %>% 
+      select(cidade, estado, latitude)    
+    ```
+   
+   A expressão "do Oiapoque ao Chuí" não é exata. O certo parece ser "de Uiramutã ao Chuí".
+   
+   `r fim_resposta()`
+
 1. Quais são as $10$ cidades de [maior e menor longitude]{.hl}?
+
+   `r inicio_resposta()`
+   
+   Maior longitude:
+   
+    ```{r}
+    cidades %>% 
+      slice_max(longitude, n = 10) %>% 
+      select(cidade, estado, longitude)    
+    ```
+
+   Temos um problema: longitude zero é em Londres! 
+   
+   Os dados estão errados. Vamos ignorar cidades com zero no campo `longitude`:
+   
+    ```{r}
+    cidades %>% 
+      filter(longitude != 0) %>% 
+      slice_max(longitude, n = 10) %>% 
+      select(cidade, estado, longitude)    
+    ```
+   
+   Menor longitude:
+   
+    ```{r}
+    cidades %>% 
+      slice_min(longitude, n = 10) %>% 
+      select(cidade, estado, longitude)    
+    ```
+   
+   `r fim_resposta()`
 
 1. Quais são as $10$ cidades de [maior e menor altitude]{.hl}?
 
-1. Responda as perguntas acima [por região geográfica]. Você vai precisar da resposta [desta questão](#regioes-geo).
+   `r inicio_resposta()`
+   
+   Maior altitude:
+   
+    ```{r}
+    cidades %>% 
+     slice_max(altitude, n = 10) %>% 
+     select(cidade, estado, altitude)    
+    ```
+
+   Menor altitude:
+   
+    ```{r}
+    cidades %>% 
+     slice_min(altitude, n = 10) %>% 
+     select(cidade, estado, altitude)    
+    ```
+   
+   `r fim_resposta()`
+
+1. Responda as perguntas acima [por região geográfica]{.hl}. Você vai precisar da resposta [desta questão](#regioes-geo).
+
+   `r inicio_resposta()`
+   
+   Latitude:
+   
+   Só a região Norte pode ter cidades com latitude zero.
+   
+    ```{r}
+    cidades %>% 
+      filter(latitude != 0 | regiao == 'N') %>% 
+      group_by(regiao) %>% 
+      slice_max(latitude, n = 10) %>% 
+      select(cidade, estado, regiao, latitude)
+    ```
+   
+    ```{r}
+    cidades %>% 
+      group_by(regiao) %>% 
+      slice_min(latitude, n = 10) %>% 
+      select(cidade, estado, regiao, latitude)
+    ```
+   
+   Longitude:
+   
+    ```{r}
+    cidades %>% 
+      filter(longitude != 0) %>% 
+      group_by(regiao) %>% 
+      slice_max(longitude, n = 10) %>% 
+      select(cidade, estado, regiao, longitude)
+    ```
+   
+    ```{r}
+    cidades %>% 
+      filter(longitude != 0) %>% 
+      group_by(regiao) %>% 
+      slice_min(longitude, n = 10) %>% 
+      select(cidade, estado, regiao, longitude)
+    ```
+
+   Altitude:
+   
+    ```{r}
+    cidades %>% 
+      group_by(regiao) %>% 
+      slice_max(altitude, n = 10) %>% 
+      select(cidade, estado, regiao, altitude)
+    ```
+   
+    ```{r}
+    cidades %>% 
+      group_by(regiao) %>% 
+      slice_min(altitude, n = 10) %>% 
+      select(cidade, estado, regiao, altitude)
+    ```
+
+   `r fim_resposta()`
 
 
 ## Faixas etárias
@@ -1394,6 +1650,60 @@ library(patchwork)
 
 1. Faça um histograma das áreas das cidades. Use o número de classes que você achar mais adequado.
 
+   `r inicio_resposta()`
+   
+   Primeira tentativa:
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_histogram(
+          aes(area),
+          bins = 100
+        ) +
+        labs(
+          y = NULL,
+          x = 'Área (km²)'
+        )
+    ```
+   
+   Existem muitas cidades com área pequena, e poucos com área grande. Uma boa chance de usar uma escala logarítmica:
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_histogram(
+          aes(area),
+          bins = 50
+        ) +
+        scale_x_log10() +
+        labs(
+          y = NULL,
+          x = 'Área (km²)'
+        )
+    ```   
+   
+   Podemos examinar apenas as cidades com área entre $100$ e $1000$ km² (com escala linear):
+   
+    ```{r}
+    cidades %>% 
+      filter(between(area, 100, 1000)) %>% 
+      ggplot() +
+        geom_histogram(
+          aes(area),
+          breaks = seq(100, 1000, 100)
+        ) +
+        scale_x_continuous(
+          breaks = seq(100, 1000, 100)
+        ) +
+        labs(
+          y = NULL,
+          x = 'Área (km²)'
+        )
+    ```      
+
+   `r fim_resposta()`
+
 1. Comente os resultados.
 
 
@@ -1457,7 +1767,67 @@ library(patchwork)
 
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} do PIB *per capita*, com um *boxplot* para cada atividade principal. Faça com que os *boxplots* sejam horizontais, para facilitar a leitura dos nomes das atividades.
 
+   `r inicio_resposta()`
+   
+   Primeira tentativa:
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_boxplot(
+          aes(x = atividade_principal, y = pib_capita)
+        ) +
+      coord_flip()
+    ```
+   
+   Vamos abreviar os nomes das atividades:
+   
+    ```{r}
+    cidades %>% 
+      mutate(
+        atividade_principal = word(atividade_principal, end = 5)
+      ) %>% 
+      ggplot() +
+        geom_boxplot(
+          aes(x = atividade_principal, y = pib_capita)
+        ) +
+        labs(
+          y = 'PIB per capita',
+          x = NULL
+        ) +
+        coord_flip()
+    ```
+
+   Podemos usar uma escala logarítmica:
+   
+    ```{r}
+    cidades %>% 
+      mutate(
+        atividade_principal = word(atividade_principal, end = 5)
+      ) %>% 
+      ggplot() +
+        geom_boxplot(
+          aes(x = atividade_principal, y = pib_capita)
+        ) +
+        scale_y_log10() +
+        labs(
+          y = 'PIB per capita',
+          x = NULL
+        ) +
+        coord_flip()
+    ```
+   
+   `r fim_resposta()`
+
 1. Comente os resultados.
+
+   `r inicio_resposta()`
+   
+   As atividades associadas ao maior PIB *per capita* [mediano]{.hl} são (1) eletricidade, gás, água e esgoto e (2) comércio e reparação de veículos.
+   
+   As atividades associadas ao menor PIB *per capita* [mediano]{.hl} são administração, defesa, educação e saúde.
+   
+   `r fim_resposta()`
 
 
 ## Hotéis e categoria de turismo
@@ -1520,11 +1890,90 @@ library(patchwork)
 
 1. Faça um gráfico de barras das quantidades de cidades, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_bar(
+          aes(x = regiao)
+        ) +
+        labs(
+          y = NULL
+        )
+    ```
+   
+   `r fim_resposta()`
+
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_bar(
+          aes(
+            x = fct_reorder(
+              regiao, 
+              cidade, 
+              .fun = length, 
+              .desc = TRUE
+            )
+          )
+        ) +
+        labs(
+          y = NULL,
+          x = 'região'
+        )
+    ```
+   
+   `r fim_resposta()`
 
 1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
 
+   `r inicio_resposta()`
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_bar(
+          aes(
+            x = fct_reorder(
+              regiao, 
+              cidade, 
+              .fun = length
+            )
+          )
+        ) +
+        labs(
+          y = NULL,
+          x = 'região'
+        )
+    ```
+   
+   `r fim_resposta()`
+
 1. Comente os resultados.
+
+   `r inicio_resposta()`
+   
+   Quais são as áreas totais das regiões?
+   
+    ```{r}
+    cidades %>% 
+      group_by(regiao) %>% 
+      summarize(area = sum(area)) %>% 
+      arrange(area)
+    ```
+   
+   A região Norte tem a maior área, mas o menor número de cidades.
+   
+   A região Centro-Oeste tem a segunda maior área, mas o segundo menor número de cidades.
+   
+   As outras regiões seguem a mesma ordem, tanto em área quanto em número de cidades.
+   
+   `r fim_resposta()`
 
 
 ## Populações por região geográfica
@@ -1579,6 +2028,62 @@ library(patchwork)
 
 1. Cada conjunto deve ter $6$ barras lado a lado, uma para cada faixa etária. Use o argumento `dodge` na geometria adequada.
 
+   `r inicio_resposta()`
+   
+    ```{r}
+    df_faixas <- cidades %>% 
+      pivot_longer(
+        cols = starts_with('pop_regular_'),
+        names_to = 'faixa',
+        names_prefix = 'pop_regular_',
+        values_to = 'pop'
+      ) %>% 
+      mutate(
+        faixa = case_when(
+          faixa == '1' ~ 'até 1',
+          faixa == '1_4' ~ '1 a 4',
+          faixa == '5_9' ~ '5 a 9',
+          faixa == '10_14' ~ '10 a 14',
+          faixa == '15_59' ~ '15 a 59',
+          faixa == '60_mais' ~ '60 ou mais'
+        )
+      ) %>% 
+      mutate(
+        faixa = factor(
+          faixa,
+          levels = unique(faixa),
+          ordered = TRUE
+        )
+      ) %>% 
+      select(cidade, regiao, faixa, pop)
+    
+    df_faixas
+    ```
+   
+    ```{r}
+    df_faixas %>% 
+      ggplot() +
+        geom_col(
+          aes(x = regiao, y = pop, fill = faixa),
+          position = 'dodge'
+        ) +
+        labs(
+          title = 'População por região, por faixa etária',
+          x = 'região',
+          y = NULL,
+          fill = NULL
+        ) +
+        scale_y_continuous(
+          labels = scales::label_number(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        )
+    ```
+   
+   `r fim_resposta()`
+
+
 1. Comente os resultados.
 
 
@@ -1589,6 +2094,56 @@ library(patchwork)
 1. Todas as barras devem ser da mesma altura, e o eixo $y$ deve ir de $0$ até $1$, representando proporções.
 
 1. Cada barra deve ser subdividida em faixas horizontais de cores diferentes, uma faixa colorida para cada faixa etária, de acordo com as proporções de cada faixa etária em cada região.
+
+   `r inicio_resposta()`
+   
+    ```{r}
+    df_faixas <- cidades %>% 
+      pivot_longer(
+        cols = starts_with('pop_regular_'),
+        names_to = 'faixa',
+        names_prefix = 'pop_regular_',
+        values_to = 'pop'
+      ) %>% 
+      mutate(
+        faixa = case_when(
+          faixa == '1' ~ 'até 1',
+          faixa == '1_4' ~ '1 a 4',
+          faixa == '5_9' ~ '5 a 9',
+          faixa == '10_14' ~ '10 a 14',
+          faixa == '15_59' ~ '15 a 59',
+          faixa == '60_mais' ~ '60 ou mais'
+        )
+      ) %>% 
+      mutate(
+        faixa = factor(
+          faixa,
+          levels = unique(faixa),
+          ordered = TRUE
+        )
+      ) %>% 
+      select(cidade, regiao, faixa, pop)
+    
+    df_faixas
+    ```
+   
+    ```{r}
+    df_faixas %>% 
+      ggplot() +
+        geom_col(
+          aes(x = regiao, y = pop, fill = fct_rev(faixa)),
+          position = 'fill'
+        ) +
+        labs(
+          title = 'População por região, por faixa etária',
+          subtitle = '(proporções)',
+          x = 'região',
+          y = NULL,
+          fill = NULL
+        )
+    ```
+   
+   `r fim_resposta()`
 
 1. Comente os resultados.
 
