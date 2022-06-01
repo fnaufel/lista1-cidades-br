@@ -1,5 +1,5 @@
 ---
-title: 'Cidades brasileiras'
+title: 'Cidades brasileiras: respostas'
 subtitle: 'Lista avaliativa -- Probabilidade e Estatística -- 2022.1'
 author: 'fnaufel'
 email: 'https://fnaufel.github.io/'
@@ -11,12 +11,13 @@ output:
   #   install.packages("devtools")
   #   devtools::install_github("fnaufel/fnaufelRmd")
   fnaufelRmd::html_report:
-    css:
-      - default
-      - html_files/webex.css
-    includes:
-      after_body: 
-      - html_files/webex.js
+    []
+    # css:
+    #   - default
+    #   - html_files/webex.css
+    # includes:
+    #   after_body: 
+    #   - html_files/webex.js
 
 ---
 
@@ -57,9 +58,6 @@ options(fmdigits = 3)
 
 # Para mapas interativos
 library(leaflet)
-
-library(exercises)
-exercises::iniciar()
 
 # Para gráficos lado a lado
 library(patchwork)
@@ -327,7 +325,7 @@ library(patchwork)
 
 1. Compare a quantidade de estados com a quantidade de capitais. O que está errado? Conserte a situação.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Como `capital` é uma coluna booleana, usamos `sum` para obter a quantidade de municípios para os quais `capital` é verdadeiro:
 
@@ -388,14 +386,14 @@ library(patchwork)
       arrange(estado)
     ```
    
-   `r fim_resposta()`
+   :::
 
 
 ## Populações
 
 1. Verifique se a coluna `pop_resid` (população de residentes) é a soma de `pop_resid_bras` (população de residentes brasileiros) com `pop_resid_estr` (população de residentes estrangeiros). Use a função `all`.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -406,14 +404,14 @@ library(patchwork)
    
    Sim.
    
-   `r fim_resposta()`
+   :::
 
 
 ## Unidades domésticas
 
 1. Verifique se a coluna `unidades_domest` (unidades domésticas) é a soma de `unidades_domest_urban` (urbanas) com `unidades_domest_rural` (rurais). Use a função `all`.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -445,14 +443,14 @@ library(patchwork)
    
    A diferença nunca é maior que $1$.
 
-   `r fim_resposta()`
+   :::
    
 
 ## Categorias de turismo
 
 1. Na coluna `categoria_turismo`, substitua os zeros por `NA` e converta tudo para um [fator ordenado]{.hl} com níveis $E < D < C < B < A$. Use a função `factor`.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     categoria_fator <- cidades %>% 
@@ -475,14 +473,14 @@ library(patchwork)
       count(categoria_turismo)
     ```
    
-   `r fim_resposta()`
+   :::
 
 
 ## Tipos
 
 1. Na coluna `tipo`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     tipo_fator <- cidades %>% 
@@ -505,14 +503,14 @@ library(patchwork)
       count(tipo)
     ```
    
-   `r fim_resposta()`
+   :::
 
 
 ## Atividades principais
 
 1. Na coluna `atividade_principal`, substitua os zeros por `NA` e converta tudo para um [fator não-ordenado]{.hl}.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     ap_fator <- cidades %>% 
@@ -535,14 +533,14 @@ library(patchwork)
       count(atividade_principal)
     ```
    
-   `r fim_resposta()`
+   :::
 
 
 ## Regiões geográficas {#regioes-geo}
 
 1. Crie uma nova coluna, [do tipo fator]{.hl}, chamada `regiao`, com a região geográfica (Norte, Nordeste, Centro-Oeste, Sudeste, ou Sul) onde está cada município. Use os níveis 'N', 'NE', 'CO', 'SE', 'S'.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     estados <- unique(cidades$estado) %>% sort()
@@ -567,14 +565,14 @@ library(patchwork)
       arrange(regiao)
     ```
     
-   `r fim_resposta()`
+   :::
 
 
 ## Regiões de turismo
 
 1. Na coluna `regiao_turismo`, substitua os zeros por `NA`.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Quantos zeros são?
    
@@ -605,7 +603,7 @@ library(patchwork)
       count(is.na(regiao_turismo))
     ```
    
-   `r fim_resposta()`
+   :::
    
 
 1. Quantas regiões de turismo são?
@@ -618,7 +616,7 @@ library(patchwork)
 
 1. Existe alguma região de turismo contendo cidades de estados diferentes?
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -628,7 +626,7 @@ library(patchwork)
       filter(estados > 1)
     ```
    
-   `r fim_resposta()`
+   :::
 
 
 ## Nomes das regiões de turismo
@@ -637,7 +635,7 @@ library(patchwork)
 
 1. Quais são as $10$ palavras mais comuns que iniciam os nomes de regiões de turismo? Use a função `word`.
    
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     mais_comuns <- cidades %>% 
@@ -649,11 +647,11 @@ library(patchwork)
     mais_comuns
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Liste, em ordem alfabética, os nomes completos das regiões de turismo cujos nomes começam com palavras desta lista. 
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -665,7 +663,7 @@ library(patchwork)
       arrange(regiao_turismo)
     ```
    
-   `r fim_resposta()`
+   :::
 
 
 ## PIB
@@ -677,7 +675,7 @@ library(patchwork)
 
 1. Quais as $10$ cidades que têm a [maior quantidade de carros por habitante]{.hl}?
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Se usarmos `pop_regular`, algumas cidades têm zero neste campo:
    
@@ -710,7 +708,7 @@ library(patchwork)
     carros_pop_resid <- cidades %>% 
       filter(pop_resid > 0) %>% 
       mutate(
-        carros_por_habitante = carros / pop_regular
+        carros_por_habitante = carros / pop_resid
       ) %>% 
       slice_max(carros_por_habitante, n = 10) %>% 
       select(cidade, estado, carros_por_habitante, tipo)
@@ -731,23 +729,33 @@ library(patchwork)
     carros_pop_est
     ```   
 
-   As duas primeiras maneiras dão o mesmo resultado:
-   
+   Vamos comparar:
+
     ```{r}
-    all(carros_pop_regular$cidade == carros_pop_resid$cidade)
+    tibble(
+      regular = paste(
+        carros_pop_regular$cidade,
+        carros_pop_regular$estado,
+        sep = ', '
+      ),
+      resid = paste(
+        carros_pop_resid$cidade,
+        carros_pop_resid$estado,
+        sep = ', '
+      ),
+      estim = paste(
+        carros_pop_est$cidade,
+        carros_pop_est$estado,
+        sep = ', '
+      )
+    )
     ```
-   
-   Usando a população estimada, não há nenhuma cidade em comum com os resultados das duas primeiras maneiras:
-   
-    ```{r}
-    intersect(carros_pop_regular$cidade, carros_pop_est$cidade)
-    ```
-   
-   `r fim_resposta()`
+
+   :::
 
 1. Quais as $10$ cidades que têm a [menor quantidade de carros por habitante]{.hl}?
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Vamos ignorar as cidades com zero carros.
    
@@ -771,7 +779,7 @@ library(patchwork)
     carros_pop_resid <- cidades %>% 
       filter(carros > 0) %>% 
       mutate(
-        carros_por_habitante = carros / pop_regular
+        carros_por_habitante = carros / pop_resid
       ) %>% 
       slice_min(carros_por_habitante, n = 10) %>% 
       select(cidade, estado, carros_por_habitante, tipo)
@@ -794,31 +802,229 @@ library(patchwork)
     ```   
 
    Vamos comparar:
-   
+
     ```{r}
     tibble(
-      regular = carros_pop_regular$cidade,
-      resid = carros_pop_resid$cidade,
-      estim = carros_pop_est$cidade
+      regular = paste(
+        carros_pop_regular$cidade,
+        carros_pop_regular$estado,
+        sep = ', '
+      ),
+      resid = paste(
+        carros_pop_resid$cidade,
+        carros_pop_resid$estado,
+        sep = ', '
+      ),
+      estim = paste(
+        carros_pop_est$cidade,
+        carros_pop_est$estado,
+        sep = ', '
+      )
     )
     ```
-   
-   `r fim_resposta()`
+
+   :::
 
 1. Quais são os tipos destas cidades?
 
+   ::: {.rmdbox latex=1}
+   
+   Já incluídos nos resultados acima.
+   
+   :::
+   
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   As cidades com [mais]{.hl} carros por habitante são todas da região Sul ou Sudeste.
+   
+   Por um dos critérios, são todas do tipo rural adjacente.
+   
+   As únicas capitais que aparecem são Belo Horizonte e Curitiba.
+   
+   As cidades com [menos]{.hl} carros por habitante são todas da região Norte, onde o transporte rodoviário é pouco desenvolvido.
+   
+   São todas do tipo rural remoto ou intermediário remoto.
+   
+   :::
+   
 
 ## Motos
 
 1. Quais as $10$ cidades que têm a [maior quantidade de motos por habitante]{.hl}?
 
+   ::: {.rmdbox latex=1}
+   
+   Se usarmos `pop_regular`, algumas cidades têm zero neste campo:
+   
+    ```{r}
+    cidades %>% 
+      mutate(
+        motos_por_habitante = motos / pop_regular
+      ) %>% 
+      slice_max(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, pop_regular)
+    ```
+
+   Vamos excluí-las:
+   
+    ```{r}
+    motos_pop_regular <- cidades %>% 
+      filter(pop_regular > 0) %>% 
+      mutate(
+        motos_por_habitante = motos / pop_regular
+      ) %>% 
+      slice_max(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, tipo)
+    
+    motos_pop_regular
+    ```   
+
+   Ou podemos usar a população residente, também eliminando as cidades com zero neste campo:
+   
+    ```{r}
+    motos_pop_resid <- cidades %>% 
+      filter(pop_resid > 0) %>% 
+      mutate(
+        motos_por_habitante = motos / pop_resid
+      ) %>% 
+      slice_max(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, tipo)
+    
+    motos_pop_resid
+    ```      
+
+   Ou podemos usar a população estimada, onde as cidades com zero habitantes têm zero motos --- e o R calcula $0/0$ como `NaN`, não como `Inf`:
+   
+    ```{r}
+    motos_pop_est <- cidades %>% 
+      mutate(
+        motos_por_habitante = motos / pop_estimada
+      ) %>% 
+      slice_max(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, tipo)
+    
+    motos_pop_est
+    ```   
+
+   Vamos comparar:
+
+    ```{r}
+    tibble(
+      regular = paste(
+        motos_pop_regular$cidade,
+        motos_pop_regular$estado,
+        sep = ', '
+      ),
+      resid = paste(
+        motos_pop_resid$cidade,
+        motos_pop_resid$estado,
+        sep = ', '
+      ),
+      estim = paste(
+        motos_pop_est$cidade,
+        motos_pop_est$estado,
+        sep = ', '
+      )
+    )
+    ```
+
+   :::
+
 1. Quais as $10$ cidades que têm a [menor quantidade de motos por habitante]{.hl}?
+
+   ::: {.rmdbox latex=1}
+   
+   Vamos ignorar as cidades com zero motos.
+   
+   Usando a população regular:
+   
+    ```{r}
+    motos_pop_regular <- cidades %>%
+      filter(motos > 0) %>% 
+      mutate(
+        motos_por_habitante = motos / pop_regular
+      ) %>% 
+      slice_min(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, tipo)
+    
+    motos_pop_regular
+    ```
+
+   Usando a população residente:
+   
+    ```{r}
+    motos_pop_resid <- cidades %>% 
+      filter(motos > 0) %>% 
+      mutate(
+        motos_por_habitante = motos / pop_resid
+      ) %>% 
+      slice_min(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, tipo)
+    
+    motos_pop_resid
+    ```      
+
+   Usando a população estimada:
+   
+    ```{r}
+    motos_pop_est <- cidades %>% 
+      filter(motos > 0) %>% 
+      mutate(
+        motos_por_habitante = motos / pop_estimada
+      ) %>% 
+      slice_min(motos_por_habitante, n = 10) %>% 
+      select(cidade, estado, motos_por_habitante, tipo)
+    
+    motos_pop_est
+    ```   
+
+   Vamos comparar:
+
+    ```{r}
+    tibble(
+      regular = paste(
+        motos_pop_regular$cidade,
+        motos_pop_regular$estado,
+        sep = ', '
+      ),
+      resid = paste(
+        motos_pop_resid$cidade,
+        motos_pop_resid$estado,
+        sep = ', '
+      ),
+      estim = paste(
+        motos_pop_est$cidade,
+        motos_pop_est$estado,
+        sep = ', '
+      )
+    )
+    ```
+
+   :::
 
 1. Quais são os tipos destas cidades?
 
+   ::: {.rmdbox latex=1}
+   
+   Já incluídos nos resultados acima.
+   
+   :::
+
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   Por dois dos critérios, as cidades com [mais]{.hl} motos por habitante são todas da região Norte ou Nordeste.
+   
+   São do tipo rural adjacente ou urbano.
+   
+   As cidades com [menos]{.hl} motos por habitante são todas da região Norte, onde o transporte rodoviário é pouco desenvolvido.
+   
+   São todas do tipo rural remoto ou rural adjacente.
+   
+   :::
 
 
 ## Tratores
@@ -869,18 +1075,70 @@ library(patchwork)
 
 1. Quais as $10$ cidades que têm a [maior densidade demográfica]{.hl}?
 
+   ::: {.rmdbox latex=1}
+   
+   Vamos usar a população residente.
+   
+    ```{r}
+    cidades_dd <- cidades %>% 
+      mutate(
+        dens = pop_resid / area
+      )
+    ```
+
+    ```{r}
+    cidades_dd %>% 
+      slice_max(dens, n = 10) %>% 
+      select(cidade, estado, estado, dens, tipo)
+    ```
+
+   :::
+   
 1. Quais as $10$ cidades que têm a [menor densidade demográfica]{.hl}?
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades_dd %>% 
+      slice_min(dens, n = 10) %>% 
+      select(cidade, estado, estado, dens, tipo)
+    ```
+   
+   Problema: há cidades com zero habitantes. Vamos ignorá-las:
+   
+    ```{r}
+    cidades_dd %>% 
+      filter(dens > 0) %>% 
+      slice_min(dens, n = 10) %>% 
+      select(cidade, estado, estado, dens, tipo)
+    ```
+   
+   :::
+   
 1. Quais são os tipos destas cidades? 
 
+   ::: {.rmdbox latex=1}
+   
+   Incluídos nas tabelas acima.
+   
+   :::
+   
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Com exceção de Olinda e Fortaleza, as cidades de maior densidade demográfica estão no Rio de Janeiro e em São Paulo.
+   
+   As de menor densidade demográfica ficam na região Norte, com exceção de Rondolândia.
+   
+   :::
+   
 
 ## Cidades extremas
 
 1. Quais são as $10$ cidades de [maior e menor latitude]{.hl}?
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Maior latitude:
    
@@ -900,11 +1158,11 @@ library(patchwork)
    
    A expressão "do Oiapoque ao Chuí" não é exata. O certo parece ser "de Uiramutã ao Chuí".
    
-   `r fim_resposta()`
+   :::
 
 1. Quais são as $10$ cidades de [maior e menor longitude]{.hl}?
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Maior longitude:
    
@@ -933,11 +1191,11 @@ library(patchwork)
       select(cidade, estado, longitude)    
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Quais são as $10$ cidades de [maior e menor altitude]{.hl}?
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Maior altitude:
    
@@ -955,11 +1213,11 @@ library(patchwork)
      select(cidade, estado, altitude)    
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Responda as perguntas acima [por região geográfica]{.hl}. Você vai precisar da resposta [desta questão](#regioes-geo).
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Latitude:
    
@@ -1014,7 +1272,7 @@ library(patchwork)
       select(cidade, estado, regiao, altitude)
     ```
 
-   `r fim_resposta()`
+   :::
 
 
 ## Faixas etárias
@@ -1070,10 +1328,82 @@ library(patchwork)
 
 1. Faça um *scatterplot* de IDHM (no eixo $y$) por despesas municipais (no eixo $x$).
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_point(
+          aes(x = despesas_municipais, y = idhm)
+        ) +
+        scale_x_continuous(
+          labels = scales::number_format(
+            scale = 1e-9
+          )
+        ) +
+        labs(
+          x = 'despesas municipais\n(bilhões R$)',
+          y = 'IDHM'
+        )
+    ```
+   
+   Horrível. Vamos limitar a despesas maiores que zero e menores que $1$ bilhão, e ignorar as cidades com IDHM igual a zero:
+
+    ```{r}
+    grafico <- 
+      cidades %>% 
+        filter(
+          between(despesas_municipais, 1, 1e9),
+          idhm > 0
+        ) %>% 
+        ggplot(
+          aes(x = despesas_municipais, y = idhm)
+        ) +
+          geom_point() +
+          scale_x_continuous(
+            labels = scales::number_format(
+              scale = 1e-6
+            )
+          ) +
+          labs(
+            x = 'despesas municipais\n(milhões R$)',
+            y = 'IDHM'
+          )
+    
+    grafico
+    ```
+   
+   :::
+   
 1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    grafico +
+      geom_smooth(method = 'lm', se = FALSE)
+    ```
+   
+   :::
+   
 1. Existe alguma correlação entre as quantidades? Comente.
 
+   ::: {.rmdbox latex=1}
+   
+   É razoável pensar que despesas municipais maiores estão associadas a um IDHM maior, por causa de investimentos em saúde, educação, etc.
+   
+   A reta de regressão mostra que sim, embora a correlação não seja tão grande:
+   
+    ```{r}
+    cor(cidades$idhm, cidades$despesas_municipais)
+    ```
+   
+   Existem cidades com despesas baixas e IDHM alto.
+   
+   Acima de $250$ milhões de despesas, nenhuma cidade tem IDHM menor que $0{,}6$. 
+   
+   :::
+   
 
 ## IDHM e carros
 
@@ -1120,7 +1450,7 @@ library(patchwork)
 
 1. Faça um histograma da quantidade de agências bancárias públicas. Use o número de classes que você achar mais adequado.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Existem muitas cidades com zero agências públicas:
    
@@ -1169,11 +1499,11 @@ library(patchwork)
 
    Perceba como os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos.
    
-   `r fim_resposta()`
+   :::
 
 1. Compare com a distribuição de agências privadas.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r histograma-privadas, include=FALSE}
     privadas <- cidades %>% 
@@ -1271,16 +1601,22 @@ library(patchwork)
       select(cidade, estado, starts_with('agencias'))
     ```
 
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Comentários incluídos nas respostas acima.
+   
+   :::
+   
 
 ## Agências bancárias (públicas) *per capita*
 
 1. Faça um histograma da razão [(número de agências bancárias públicas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r privadas-per-capita, include=FALSE}
     privadaspc <- cidades %>% 
@@ -1337,11 +1673,11 @@ library(patchwork)
     publicaspc
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Compare com a distribuição de agências privadas.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     privadaspc + publicaspc
@@ -1421,16 +1757,22 @@ library(patchwork)
    
    Em outras palavras: [para uma mesma população]{.hl}, existem, em média, [mais agências privadas do que públicas]{.hl}, e, quanto maior a população, maior a diferença.
 
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   Comentários incluídos nas respostas acima.
+   
+   :::
 
 
 ## Agências bancárias (privadas)
 
 1. Faça um histograma da quantidade de agências bancárias privadas. Use o número de classes que você achar mais adequado.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Existem muitas cidades com zero agências privadas:
    
@@ -1457,11 +1799,11 @@ library(patchwork)
 
    Perceba como os rótulos do eixo $x$ são as quantidades de agências, não os logaritmos.
    
-   `r fim_resposta()`
+   :::
 
 1. Compare com a distribuição de agências públicas.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    [Veja a distribuição de agências públicas aqui.](#ag%C3%AAncias-banc%C3%A1rias-p%C3%BAblicas)
 
@@ -1534,7 +1876,7 @@ library(patchwork)
       select(cidade, estado, starts_with('agencias'))
     ```
 
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
 
@@ -1543,7 +1885,7 @@ library(patchwork)
 
 1. Faça um histograma da razão [(número de agências bancárias privadas) / (população)]{.hl}. Use o número de classes que você achar mais adequado.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Existem muitas cidades com zero agências privadas:
    
@@ -1557,11 +1899,11 @@ library(patchwork)
     ```{r ref.label='privadas-per-capita'}
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Compare com a distribuição de agências públicas.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     privadaspc + publicaspc
@@ -1641,16 +1983,22 @@ library(patchwork)
    
    Em outras palavras: [para uma mesma população]{.hl}, existem, em média, [mais agências privadas do que públicas]{.hl}, e, quanto maior a população, maior a diferença.
 
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   Comentários incluídos nas respostas acima.
+   
+   :::
 
 
 ## Áreas
 
 1. Faça um histograma das áreas das cidades. Use o número de classes que você achar mais adequado.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Primeira tentativa:
    
@@ -1683,18 +2031,18 @@ library(patchwork)
         )
     ```   
    
-   Podemos examinar apenas as cidades com área entre $100$ e $1000$ km² (com escala linear):
+   Podemos examinar apenas as cidades com área entre $0$ e $1000$ km² (com escala linear):
    
     ```{r}
     cidades %>% 
-      filter(between(area, 100, 1000)) %>% 
+      filter(between(area, 0, 1000)) %>% 
       ggplot() +
         geom_histogram(
           aes(area),
-          breaks = seq(100, 1000, 100)
+          breaks = seq(0, 1000, 100)
         ) +
         scale_x_continuous(
-          breaks = seq(100, 1000, 100)
+          breaks = seq(0, 1000, 100)
         ) +
         labs(
           y = NULL,
@@ -1702,9 +2050,17 @@ library(patchwork)
         )
     ```      
 
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   Alguns comentários incluídos nas respostas acima.
+   
+   A classe modal é entre $100$ e $200$ km².
+   
+   :::
 
 
 ## Áreas (com facetas)
@@ -1718,7 +2074,96 @@ library(patchwork)
 
 1. Faça um histograma das populações das cidades. Use o número de classes que você achar mais adequado.
 
+   ::: {.rmdbox latex=1}
+   
+   Primeira tentativa:
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = pop_resid)
+        )
+    ```
+   
+   Usando escala logarítmica:
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = pop_resid)
+        ) +
+        scale_x_log10(
+          labels = scales::number_format(
+            scale = 1e-3,
+            suffix = 'k'
+          )
+        ) +
+        labs(
+          y = NULL,
+          x = 'população'
+        )
+    ```
+
+   Vamos limitar a cidades de no máximo $100$ mil habitantes, com escala linear:
+
+    ```{r}
+    cidades %>% 
+      filter(pop_resid < 1e5) %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = pop_resid),
+          breaks = seq(0, 1e5, 10000)
+        ) +
+        scale_x_continuous(
+          breaks = seq(0, 1e5, 10000),
+          labels = scales::number_format(
+            scale = 1e-3,
+            suffix = 'k'
+          )
+        ) +
+        labs(
+          y = NULL,
+          x = 'população'
+        )
+    ```
+   
+   :::
+
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   Há muito mais cidades com poucos habitantes.
+   
+   A classe modal é a de cidades com até $10$ mil habitantes.
+   
+   A população mediana é
+   
+    ```{r}
+    cidades$pop_resid %>% median()
+    ```
+   
+   o que diz que aproximadamente metade das cidades tem menos de $11$ mil habitantes.
+   
+   Qual a população total destas cidades pequenas?
+   
+    ```{r}
+    cidades %>% 
+      mutate(
+        tamanho = case_when(
+          pop_resid < 11000 ~ 'Pequenas',
+          TRUE ~ 'Grandes'
+        )
+      ) %>% 
+      group_by(tamanho) %>% 
+      summarize(populacao = sum(pop_resid))
+    ```
+   
+   Embora metade das cidades tenha $11$ mil habitantes ou menos, sua população total é [$10$ vezes menor]{.hl} que a população total da outra metade.
+   
+   :::
 
 
 ## Populações (com facetas)
@@ -1767,7 +2212,7 @@ library(patchwork)
 
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} do PIB *per capita*, com um *boxplot* para cada atividade principal. Faça com que os *boxplots* sejam horizontais, para facilitar a leitura dos nomes das atividades.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Primeira tentativa:
    
@@ -1817,17 +2262,17 @@ library(patchwork)
         coord_flip()
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
-   As atividades associadas ao maior PIB *per capita* [mediano]{.hl} são (1) eletricidade, gás, água e esgoto e (2) comércio e reparação de veículos.
+   As atividades associadas ao [maior]{.hl} PIB *per capita* [mediano]{.hl} são (1) eletricidade, gás, água e esgoto e (2) comércio e reparação de veículos.
    
-   As atividades associadas ao menor PIB *per capita* [mediano]{.hl} são administração, defesa, educação e saúde.
+   As atividades associadas ao [menor]{.hl} PIB *per capita* [mediano]{.hl} são administração, defesa, educação e saúde.
    
-   `r fim_resposta()`
+   :::
 
 
 ## Hotéis e categoria de turismo
@@ -1890,7 +2335,7 @@ library(patchwork)
 
 1. Faça um gráfico de barras das quantidades de cidades, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -1903,11 +2348,11 @@ library(patchwork)
         )
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -1928,11 +2373,11 @@ library(patchwork)
         )
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     cidades %>% 
@@ -1952,11 +2397,11 @@ library(patchwork)
         )
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
    Quais são as áreas totais das regiões?
    
@@ -1973,7 +2418,7 @@ library(patchwork)
    
    As outras regiões seguem a mesma ordem, tanto em área quanto em número de cidades.
    
-   `r fim_resposta()`
+   :::
 
 
 ## Populações por região geográfica
@@ -2026,9 +2471,15 @@ library(patchwork)
 
 1. Faça um gráfico de barras da população brasileira, com um [conjunto de barras para cada região]{.hl}. Você vai precisar da resposta [desta questão](#regioes-geo).
 
+   ::: {.rmdbox latex=1}
+   
+   Veja abaixo.
+   
+   :::
+
 1. Cada conjunto deve ter $6$ barras lado a lado, uma para cada faixa etária. Use o argumento `dodge` na geometria adequada.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     df_faixas <- cidades %>% 
@@ -2081,21 +2532,44 @@ library(patchwork)
         )
     ```
    
-   `r fim_resposta()`
-
+   :::
 
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   Perceba que as faixas etárias têm larguras diferentes. 
+   
+   As únicas comparações razoáveis são entre [$1$ a $4$]{.hl}, [$5$ a $9$]{.hl}, e [$10$ a $14$]{.hl}, que têm larguras aproximadamente iguais.
+   
+   Em todas as regiões, há mais pessoas da faixa $10$ a $14$ do que das faixas mais jovens.
+   
+   As regiões Centro Oeste e Norte são as únicas onde há menos idosos do que jovens de $10$ a $14$.
+   
+   :::
 
 
 ## Faixas etárias por região geográfica, proporções
 
 1. Faça um gráfico de barras da população brasileira, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
+   ::: {.rmdbox latex=1}
+   
+   Veja abaixo.
+   
+   :::
+
 1. Todas as barras devem ser da mesma altura, e o eixo $y$ deve ir de $0$ até $1$, representando proporções.
+
+   ::: {.rmdbox latex=1}
+   
+   Veja abaixo.
+   
+   :::
 
 1. Cada barra deve ser subdividida em faixas horizontais de cores diferentes, uma faixa colorida para cada faixa etária, de acordo com as proporções de cada faixa etária em cada região.
 
-   `r inicio_resposta()`
+   ::: {.rmdbox latex=1}
    
     ```{r}
     df_faixas <- cidades %>% 
@@ -2143,9 +2617,19 @@ library(patchwork)
         )
     ```
    
-   `r fim_resposta()`
+   :::
 
 1. Comente os resultados.
+
+   ::: {.rmdbox latex=1}
+   
+   As proporções são semelhantes entre as regiões.
+   
+   A região Norte tem a menor proporção de idosos, e a maior proporção de pessoas até $14$ anos.
+   
+   As regiões Sul e Sudeste têm a maior proporção de idosos.
+   
+   :::
 
 
 ## Faixas etárias por tipo de cidade
@@ -2161,12 +2645,107 @@ library(patchwork)
 
 1. Faça um gráfico de barras da população brasileira, com uma barra por tipo de cidade.
 
+   ::: {.rmdbox latex=1}
+   
+   Veja abaixo.
+   
+   :::
+
 1. Todas as barras devem ser da mesma altura, e o eixo $y$ deve ir de $0$ até $1$, representando proporções.
+
+   ::: {.rmdbox latex=1}
+   
+   Veja abaixo.
+   
+   :::
 
 1. Cada barra deve ser subdividida em faixas horizontais de cores diferentes, uma faixa colorida para cada faixa etária, de acordo com as proporções de cada faixa etária em cada tipo de cidade.
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    df_faixas <- cidades %>% 
+      pivot_longer(
+        cols = starts_with('pop_regular_'),
+        names_to = 'faixa',
+        names_prefix = 'pop_regular_',
+        values_to = 'pop'
+      ) %>% 
+      mutate(
+        faixa = case_when(
+          faixa == '1' ~ 'até 1',
+          faixa == '1_4' ~ '1 a 4',
+          faixa == '5_9' ~ '5 a 9',
+          faixa == '10_14' ~ '10 a 14',
+          faixa == '15_59' ~ '15 a 59',
+          faixa == '60_mais' ~ '60 ou mais'
+        )
+      ) %>% 
+      mutate(
+        faixa = factor(
+          faixa,
+          levels = unique(faixa),
+          ordered = TRUE
+        )
+      ) %>% 
+      select(cidade, tipo, faixa, pop)
+    
+    df_faixas
+    ```
+   
+    ```{r}
+    df_faixas %>% 
+      ggplot() +
+        geom_col(
+          aes(x = tipo, y = pop, fill = fct_rev(faixa)),
+          position = 'fill'
+        ) +
+        labs(
+          title = 'População por tipo de cidade, por faixa etária',
+          subtitle = '(proporções)',
+          x = 'tipo de cidade',
+          y = NULL,
+          fill = NULL
+        )
+    ```
+   
+   Vamos melhorar os rótulos do eixo $x$ e ignorar as cidades sem classificação:
+   
+    ```{r}
+    df_faixas %>% 
+      filter(tipo != 'Sem classificação') %>% 
+      ggplot() +
+        geom_col(
+          aes(x = tipo, y = pop, fill = fct_rev(faixa)),
+          position = 'fill'
+        ) +
+        labs(
+          title = 'População por tipo de cidade, por faixa etária',
+          subtitle = '(proporções)',
+          x = 'tipo de cidade',
+          y = NULL,
+          fill = NULL
+        ) +
+        scale_x_discrete(
+          labels = function(x) {
+            str_split(x, ' ') %>% 
+              map_chr(paste, collapse = '\n')
+          }
+        )
+    ```
+
+   :::
+
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Proporcionalmente. há mais idosos em cidades de tipos urbano, intermediário adjacente e rural adjacente.
+   
+   Proporcionalmente. há mais jovens em cidades de tipos intermediário remoto e rural remoto.
+   
+   :::
+   
 
 # Mapa interativo
 
