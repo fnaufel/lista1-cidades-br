@@ -318,9 +318,35 @@ library(patchwork)
 
 1. Pesquise o que é IDHM.
 
-1. Qual o valor máximo possível? Qual o valor máximo na *tibble*?
-  
+   ::: {.rmdbox latex=1}
+   
+   Segundo a [Wikipedia (consultada em 02/06/2022)](https://pt.wikipedia.org/wiki/%C3%8Dndice_de_Desenvolvimento_Humano_Municipal):
+   
+   > O Índice de Desenvolvimento Humano Municipal é uma versão modificada do IDH usado para calcular o IDH das unidades federativas do Brasil. Por ser uma versão modificada do IDH, não é recomendada a comparação com outros países que usam o IDH padrão.
+   
+   > Foi criado para ser um índice similar ao IDH que se adequasse à demografia brasileira.
+     
+   > O índice tem 3 indicadores: IDHM Longevidade, IDHM Educação, IDHM Renda.
 
+   :::
+   
+1. Qual o valor máximo possível? Qual o valor máximo na *tibble*?
+
+   ::: {.rmdbox latex=1}
+   
+   Segundo [a mesma fonte](https://pt.wikipedia.org/wiki/%C3%8Dndice_de_Desenvolvimento_Humano_Municipal), o valor máximo é $1$.
+   
+   Na *tibble*, o valor máximo é
+   
+    ```{r}
+    cidades %>%
+      slice_max(idhm, n = 1) %>% 
+      select(cidade, estado, idhm)
+    ```
+   
+   :::
+   
+     
 ## Estados e capitais
 
 1. Compare a quantidade de estados com a quantidade de capitais. O que está errado? Conserte a situação.
@@ -608,12 +634,54 @@ library(patchwork)
 
 1. Quantas regiões de turismo são?
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    n_distinct(cidades$regiao_turismo, na.rm = TRUE)
+    ```
+   
+   :::
+   
 1. Qual tem mais municípios?
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      filter(!is.na(regiao_turismo)) %>% 
+      group_by(regiao_turismo) %>% 
+      summarize(municipios = n()) %>% 
+      slice_max(municipios, n = 1)
+    ```
+   
+   :::
+   
 1. Qual tem menos municípios?
+
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      filter(!is.na(regiao_turismo)) %>% 
+      group_by(regiao_turismo) %>% 
+      summarize(municipios = n()) %>% 
+      slice_min(municipios, n = 1)
+    ```
+   
+   :::
 
 1. Quantos municípios não fazem parte de região de turismo?
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      filter(is.na(regiao_turismo)) %>% 
+      nrow()
+    ```
+   
+   :::
+   
 1. Existe alguma região de turismo contendo cidades de estados diferentes?
 
    ::: {.rmdbox latex=1}
@@ -1053,12 +1121,45 @@ library(patchwork)
 
 1. Quais as $10$ cidades que têm a [maior produção rural]{.hl}?
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      slice_max(producao_rural, n = 10) %>% 
+      select(cidade, estado, producao_rural, tipo)
+    ```
+
+   :::
+   
 1. Quais as $10$ cidades que têm a [menor produção rural]{.hl}?
+
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      filter(producao_rural > 0) %>% 
+      slice_min(producao_rural, n = 10) %>% 
+      select(cidade, estado, producao_rural, tipo)
+    ```
+
+   :::
 
 1. Quais são os tipos destas cidades? Ignore as cidades que têm zero produção rural.
 
+   ::: {.rmdbox latex=1}
+   
+   Já incluídos nas tabelas acima.
+   
+   :::
+   
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Muitas cidades do tipo urbano na lista de maiores produções rurais.
+   
+   :::
+   
 
 ## Produção rural *per capita*
 
@@ -1089,7 +1190,7 @@ library(patchwork)
     ```{r}
     cidades_dd %>% 
       slice_max(dens, n = 10) %>% 
-      select(cidade, estado, estado, dens, tipo)
+      select(cidade, estado, dens, tipo)
     ```
 
    :::
@@ -1101,7 +1202,7 @@ library(patchwork)
     ```{r}
     cidades_dd %>% 
       slice_min(dens, n = 10) %>% 
-      select(cidade, estado, estado, dens, tipo)
+      select(cidade, estado, dens, tipo)
     ```
    
    Problema: há cidades com zero habitantes. Vamos ignorá-las:
@@ -1110,7 +1211,7 @@ library(patchwork)
     cidades_dd %>% 
       filter(dens > 0) %>% 
       slice_min(dens, n = 10) %>% 
-      select(cidade, estado, estado, dens, tipo)
+      select(cidade, estado, dens, tipo)
     ```
    
    :::
@@ -1301,10 +1402,91 @@ library(patchwork)
 
 1. [Apenas para as cidades que têm McDonald's]{.hl}, faça um *scatterplot* de quantidade de McDonald's (no eixo $y$) por população (no eixo $x$).
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    grafico <- cidades %>% 
+      filter(mac > 0) %>% 
+      ggplot(
+        aes(x = pop_resid, y = mac)
+      ) +
+        geom_point() +
+        scale_x_continuous(
+          labels = scales::number_format(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        ) +
+        labs(
+          x = 'população',
+          y = 'Qtde de\nMcDonald\'s'
+        )
+    
+    grafico
+    ```
+   
+   Restringindo a cidades de até $2$ milhões de habitantes, eliminando os *outliers*:
+   
+    ```{r}
+    grafico2 <- grafico +
+      scale_x_continuous(
+        limits = c(0, 2e6),
+        labels = scales::number_format(
+          scale = 1e-6,
+          suffix = 'M'
+        )
+      )
+    
+    grafico2
+    ```
+   
+   
+   :::
+   
 1. Use `geom_smooth` para gerar uma reta de regressão (com `method = 'lm'` e `se = FALSE`).
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    grafico +
+      geom_smooth(
+        method = 'lm',
+        se = FALSE
+      )
+    ```
+
+   Restringindo a cidades de até $2$ milhões de habitantes, eliminando os *outliers*:
+
+    ```{r}
+    grafico2 +
+      geom_smooth(
+        method = 'lm',
+        se = FALSE
+      )
+    ```
+   
+   :::
+   
 1. Existe alguma correlação entre as quantidades? Comente.
 
+   ::: {.rmdbox latex=1}
+   
+   Sim, mas quando retiramos os *outliers*, a correlação diminui:
+   
+    ```{r}
+    df <- cidades %>% 
+      filter(mac > 0)
+      
+    cor(df$pop_resid, df$mac)
+    
+    df <- df %>% 
+      filter(pop_resid < 2e6)
+    
+    cor(df$pop_resid, df$mac)
+    ```
+   
+   :::
+   
 
 ## População e Walmart
 
@@ -2184,8 +2366,81 @@ library(patchwork)
 
 1. Faça um histograma do valor do PIB *per capita*. Use o número de classes que você achar mais adequado.
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = pib_capita)
+        ) +
+        labs(
+          y = NULL,
+          x = 'PIB per capita (R$)'
+        ) +
+        scale_x_continuous(
+          labels = scales::number_format(
+            scale = 1e-3,
+            suffix = 'k'
+          )
+        )
+    ```
+   
+   Em escala logarítmica:
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = pib_capita)
+        ) +
+        labs(
+          y = NULL,
+          x = 'PIB per capita (R$)'
+        ) +
+        scale_x_log10(
+          labels = scales::number_format(
+            scale = 1e-3,
+            suffix = 'k'
+          )
+        )
+    ```
+
+   Restringindo a um valor máximo:
+   
+    ```{r}
+    cidades %>% 
+      filter(pib_capita < 1e5) %>% 
+      ggplot() +
+        geom_histogram(
+          aes(x = pib_capita),
+          breaks = seq(0, 1e5, 1e4)
+        ) +
+        labs(
+          y = NULL,
+          x = 'PIB per capita (R$)'
+        ) +
+        scale_x_continuous(
+          breaks = seq(0, 1e5, 1e4),
+          labels = scales::number_format(
+            scale = 1e-3,
+            suffix = 'k'
+          )
+        )
+    ```
+   
+   :::
+
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+
+   É uma distribuição assimétrica, com uma longa cauda à direita.   
+
+   A classe modal é entre $10$ e $20$ mil reais.
+   
+   :::
+   
 
 ## Telefones fixos *per capita* (com facetas)
 
@@ -2279,9 +2534,30 @@ library(patchwork)
 
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de hotéis, com um *boxplot* para cada categoria de turismo. 
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_boxplot(
+          aes(x = fct_rev(categoria_turismo), y = hoteis)
+        ) +
+        labs(
+          x = 'categoria de turismo'
+        )
+    ```
+
+   :::
+   
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Como era de se esperar, a quantidade de hotéis é muito maior em cidades da categoria A.
+   
+   :::
 
+   
 ## Populações por região
 
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} das populações, com um *boxplot* para cada região geográfica. Você vai precisar da resposta [desta questão](#regioes-geo).
@@ -2307,8 +2583,38 @@ library(patchwork)
 
 1. Faça *boxplots* lado a lado [(no mesmo gráfico, sem facetar)]{.hl} da quantidade de motos *per capita*, com um *boxplot* para cada tipo de cidade. 
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      filter(pop_resid > 0) %>% 
+      mutate(mpc = motos / pop_resid) %>% 
+      ggplot() +
+        geom_boxplot(aes(x = tipo, y = mpc)) +
+        scale_x_discrete(
+          labels = function(x) {
+            str_split(x, ' ') %>% 
+              map_chr(paste, collapse = '\n')
+          }
+        ) +
+        labs(
+          x = 'tipo de cidade',
+          y = 'motos\nper capita'
+        )
+    ```
+   
+   :::
+   
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Medianas semelhantes.
+   
+   Sem *outliers* em cidades do tipo intermediário remoto --- que, ironicamente, têm a maior variabilidade (em termos do IQR).
+   
+   :::
+   
 
 ## Tratores *per capita* por tipo de cidade
 
@@ -2425,23 +2731,203 @@ library(patchwork)
 
 1. Faça um gráfico de barras das populações totais, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_col(
+          aes(x = regiao, y = pop_resid)
+        ) +
+        scale_y_continuous(
+          labels = scales::number_format(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        ) +
+        labs(
+          x = 'região',
+          y = 'população'
+        )
+    ```
+   
+   :::
+
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
 
-1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_col(
+          aes(
+            x = fct_reorder(
+              regiao,
+              pop_resid,
+              sum,
+              .desc = TRUE
+            ), 
+            y = pop_resid
+          )
+        ) +
+        scale_y_continuous(
+          labels = scales::number_format(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        ) +
+        labs(
+          x = 'região',
+          y = 'população'
+        )
+    ```
+   
+   :::
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. []{#pop-por-regiao}
+
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_col(
+          aes(
+            x = fct_reorder(
+              regiao,
+              pop_resid,
+              sum
+            ), 
+            y = pop_resid
+          )
+        ) +
+        scale_y_continuous(
+          labels = scales::number_format(
+            scale = 1e-6,
+            suffix = 'M'
+          )
+        ) +
+        labs(
+          x = 'região',
+          y = 'população'
+        )
+    ```
+   
+   :::
 
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   A região Sudeste é, de longe, a mais populosa, seguida da região Nordeste.
+   
+   A região Centro-Oeste é (um pouco) menos populosa do que a região Norte, ao contrário do que eu esperava.
+
+   É interessante comparar com o [gráfico dos PIBs totais por região](#pib-por-regiao) e constatar que, com exceção do primeiro lugar, toda a ordenação muda.
+   
+   :::
+   
 
 ## PIB por região geográfica
 
 1. Faça um gráfico de barras dos PIBs totais, com uma barra por região. Você vai precisar da resposta [desta questão](#regioes-geo).
 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_col(
+          aes(x = regiao, y = pib)
+        ) +
+        scale_y_continuous(
+          labels = scales::number_format(
+            scale = 1e-9,
+            suffix = 'B'
+          )
+        ) +
+        labs(
+          x = 'região',
+          y = 'PIB'
+        )
+    ```
+   
+   :::
+
 1. Use a função `fct_reorder` para dispor as barras em ordem [decrescente]{.hl} de altura. 
 
-1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. 
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_col(
+          aes(
+            x = fct_reorder(
+              regiao,
+              pib,
+              sum,
+              .desc = TRUE
+            ), 
+            y = pib
+          )
+        ) +
+        scale_y_continuous(
+          labels = scales::number_format(
+            scale = 1e-9,
+            suffix = 'B'
+          )
+        ) +
+        labs(
+          x = 'região',
+          y = 'PIB'
+        )
+    ```
+   
+   :::
+
+1. Em outro gráfico, use a função `fct_reorder` para dispor as barras em ordem [crescente]{.hl} de altura. []{#pib-por-regiao} 
+
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    cidades %>% 
+      ggplot() +
+        geom_col(
+          aes(
+            x = fct_reorder(
+              regiao,
+              pib,
+              sum
+            ), 
+            y = pib
+          )
+        ) +
+        scale_y_continuous(
+          labels = scales::number_format(
+            scale = 1e-9,
+            suffix = 'B'
+          )
+        ) +
+        labs(
+          x = 'região',
+          y = 'PIB'
+        )
+    ```
+   
+   :::
 
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   A ordenação é óbvia.
+   
+   É interessante comparar com o [gráfico das populações totais por região](#pop-por-regiao) e constatar que, com exceção do primeiro lugar, toda a ordenação muda.
+   
+   :::
+   
 
 ## Produção rural por região geográfica
 
@@ -2544,7 +3030,7 @@ library(patchwork)
    
    Em todas as regiões, há mais pessoas da faixa $10$ a $14$ do que das faixas mais jovens.
    
-   As regiões Centro Oeste e Norte são as únicas onde há menos idosos do que jovens de $10$ a $14$.
+   As regiões Centro-Oeste e Norte são as únicas onde há menos idosos do que jovens de $10$ a $14$.
    
    :::
 
@@ -2636,12 +3122,124 @@ library(patchwork)
 
 1. Faça um gráfico de barras da população brasileira, com um [conjunto de barras para cada tipo de cidade]{.hl}.
 
+   ::: {.rmdbox latex=1}
+   
+   Veja abaixo.
+   
+   :::
+
 1. Cada conjunto deve ter $6$ barras lado a lado, uma para cada faixa etária. Use o argumento `dodge` na geometria adequada.
+
+   ::: {.rmdbox latex=1}
+   
+    ```{r}
+    df_faixas <- cidades %>% 
+      pivot_longer(
+        cols = starts_with('pop_regular_'),
+        names_to = 'faixa',
+        names_prefix = 'pop_regular_',
+        values_to = 'pop'
+      ) %>% 
+      mutate(
+        faixa = case_when(
+          faixa == '1' ~ 'até 1',
+          faixa == '1_4' ~ '1 a 4',
+          faixa == '5_9' ~ '5 a 9',
+          faixa == '10_14' ~ '10 a 14',
+          faixa == '15_59' ~ '15 a 59',
+          faixa == '60_mais' ~ '60 ou mais'
+        )
+      ) %>% 
+      mutate(
+        faixa = factor(
+          faixa,
+          levels = unique(faixa),
+          ordered = TRUE
+        )
+      ) %>% 
+      select(cidade, tipo, faixa, pop)
+    
+    df_faixas
+    ```
+   
+    ```{r}
+    df_faixas %>% 
+      ggplot() +
+        geom_col(
+          aes(x = tipo, y = pop, fill = faixa),
+          position = 'dodge'
+        ) +
+        labs(
+          title = 'População por tipo de cidade, por faixa etária',
+          x = 'tipo de cidade',
+          y = NULL,
+          fill = NULL
+        )
+    ```
+
+   A população de cidades do tipo urbano é tão grande que os outros tipos ficam quase invisíveis.
+   
+   [Veja a próxima questão](#proporcoes), que resolve este problema mostrando as [proporções]{.hl} das diversas faixas etárias.
+   
+   Vamos excluir o tipo urbano do gráfico:
+   
+    ```{r}
+    df_faixas %>% 
+      filter(tipo != 'Urbano') %>% 
+      ggplot() +
+        geom_col(
+          aes(x = tipo, y = pop, fill = faixa),
+          position = 'dodge'
+        ) +
+        labs(
+          title = 'População por tipo de cidade, por faixa etária',
+          subtitle = 'exceto centros urbanos',
+          x = 'tipo de cidade',
+          y = NULL,
+          fill = NULL
+        )
+    ```
+
+   Vamos melhorar os rótulos do eixo $x$ e ignorar as cidades sem classificação:
+   
+    ```{r}
+    df_faixas %>% 
+      filter(tipo != 'Urbano') %>% 
+      filter(tipo != 'Sem classificação') %>% 
+      ggplot() +
+        geom_col(
+          aes(x = tipo, y = pop, fill = faixa),
+          position = 'dodge'
+        ) +
+        labs(
+          title = 'População por tipo de cidade, por faixa etária',
+          subtitle = 'exceto centros urbanos',
+          x = 'tipo de cidade',
+          y = NULL,
+          fill = NULL
+        ) +
+        scale_x_discrete(
+          labels = function(x) {
+            str_split(x, ' ') %>% 
+              map_chr(paste, collapse = '\n')
+          }
+        )
+    ```
+
+   :::
 
 1. Comente os resultados.
 
+   ::: {.rmdbox latex=1}
+   
+   Os centros urbanos têm uma população muito maior do que os outros tipos de cidade.
+   
+   Cidades do tipo urbano e intermediário adjacente parecem ter uma proporção significativamente maior de pessoas entre $15$ a $59$ anos.
+   
+   :::
+   
 
-## Faixas etárias por tipo de cidade, proporções
+## Faixas etárias por tipo de cidade, proporções { #proporcoes }
 
 1. Faça um gráfico de barras da população brasileira, com uma barra por tipo de cidade.
 
