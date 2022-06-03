@@ -1418,6 +1418,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'Quantidade de McDonald\'s por população',
           x = 'população',
           y = 'Qtde de\nMcDonald\'s'
         )
@@ -1524,6 +1525,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'IDHM por despesas municipais',
           x = 'despesas municipais\n(bilhões R$)',
           y = 'IDHM'
         )
@@ -1548,6 +1550,7 @@ library(patchwork)
             )
           ) +
           labs(
+            title = 'IDHM por despesas municipais',
             x = 'despesas municipais\n(milhões R$)',
             y = 'IDHM'
           )
@@ -2208,6 +2211,7 @@ library(patchwork)
         ) +
         scale_x_log10() +
         labs(
+          title = 'Áreas (escala logarítmica)',
           y = NULL,
           x = 'Área (km²)'
         )
@@ -2227,6 +2231,7 @@ library(patchwork)
           breaks = seq(0, 1000, 100)
         ) +
         labs(
+          title = 'Área (até 1000km²)',
           y = NULL,
           x = 'Área (km²)'
         )
@@ -2283,6 +2288,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'Populações',
           y = NULL,
           x = 'população'
         )
@@ -2306,6 +2312,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'Populações (até 100 mil)',
           y = NULL,
           x = 'população'
         )
@@ -2395,6 +2402,7 @@ library(patchwork)
           aes(x = pib_capita)
         ) +
         labs(
+          title = 'PIB per capita (escala logarítmica)',
           y = NULL,
           x = 'PIB per capita (R$)'
         ) +
@@ -2417,6 +2425,7 @@ library(patchwork)
           breaks = seq(0, 1e5, 1e4)
         ) +
         labs(
+          title = 'PIB per capita (até 100 mil)',
           y = NULL,
           x = 'PIB per capita (R$)'
         ) +
@@ -2492,6 +2501,7 @@ library(patchwork)
           aes(x = atividade_principal, y = pib_capita)
         ) +
         labs(
+          title = 'PIB per capita por atividade principal',
           y = 'PIB per capita',
           x = NULL
         ) +
@@ -2511,6 +2521,8 @@ library(patchwork)
         ) +
         scale_y_log10() +
         labs(
+          title = 'PIB per capita por atividade principal',
+          subtitle = '(escala logarítmica)',
           y = 'PIB per capita',
           x = NULL
         ) +
@@ -2543,6 +2555,7 @@ library(patchwork)
           aes(x = fct_rev(categoria_turismo), y = hoteis)
         ) +
         labs(
+          title = 'Quantidade de hotéis por categoria de turismo',
           x = 'categoria de turismo'
         )
     ```
@@ -2598,6 +2611,7 @@ library(patchwork)
           }
         ) +
         labs(
+          title = 'Motos per capita por tipo de cidade',
           x = 'tipo de cidade',
           y = 'motos\nper capita'
         )
@@ -2650,6 +2664,7 @@ library(patchwork)
           aes(x = regiao)
         ) +
         labs(
+          title = 'Quantidade de cidades por região geográfica',
           y = NULL
         )
     ```
@@ -2674,6 +2689,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'Quantidade de cidades por região geográfica',
           y = NULL,
           x = 'região'
         )
@@ -2698,6 +2714,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'Quantidade de cidades por região geográfica',
           y = NULL,
           x = 'região'
         )
@@ -2746,6 +2763,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'População total por região geográfica',
           x = 'região',
           y = 'população'
         )
@@ -2778,6 +2796,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'População total por região geográfica',
           x = 'região',
           y = 'população'
         )
@@ -2809,6 +2828,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'População total por região geográfica',
           x = 'região',
           y = 'população'
         )
@@ -2848,6 +2868,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'PIB por região geográfica',
           x = 'região',
           y = 'PIB'
         )
@@ -2880,6 +2901,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'PIB por região geográfica',
           x = 'região',
           y = 'PIB'
         )
@@ -2911,6 +2933,7 @@ library(patchwork)
           )
         ) +
         labs(
+          title = 'PIB por região geográfica',
           x = 'região',
           y = 'PIB'
         )
